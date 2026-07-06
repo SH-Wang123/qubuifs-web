@@ -1,0 +1,25 @@
+post:
+  summary: Export metadata
+  operationId: ExportMetadata
+  description: Export the current control-plane metadata snapshot to a destination path.
+  tags:
+    - Metadata
+  requestBody:
+    required: true
+    description: Export destination path.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/metadata.yaml#/ExportMetadataRequest'
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/metadata.yaml#/ExportMetadataData'

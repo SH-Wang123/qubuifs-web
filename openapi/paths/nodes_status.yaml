@@ -1,0 +1,25 @@
+parameters:
+  - name: node_id
+    in: path
+    required: true
+    schema:
+      type: string
+
+get:
+  tags:
+    - Node
+  summary: Get node status
+  operationId: GetNodeStatus
+  description: Get the latest pb.NodeStatusResp-compatible status for a registered node.
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/node.yaml#/NodeStatus'

@@ -1,0 +1,44 @@
+get:
+  summary: List QubuiFS
+  operationId: ListQubuiFS
+  description: List the managed QubuiFS instances known to the control plane.
+  tags:
+    - QubuiFS
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/qubuifs.yaml#/QubuiFSListData'
+
+post:
+  summary: Create QubuiFS
+  operationId: CreateQubuiFS
+  description: Create a QubuiFS instance from required control-plane metadata.
+  tags:
+    - QubuiFS
+  requestBody:
+    required: true
+    description: Required metadata used by the REST layer to build pb.QubuiFS.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/qubuifs.yaml#/QubuiFSCreateRequest'
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/qubuifs.yaml#/QubuiFSCreateData'

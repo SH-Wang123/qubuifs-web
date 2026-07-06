@@ -1,0 +1,72 @@
+RegisterNodeRequest:
+  allOf:
+    - $ref: 'crushnode.yaml#/CrushNode'
+  description: Node registration request aligned with pb.CrushNode.
+
+RegisterNodeData:
+  type: object
+  additionalProperties: false
+  properties:
+    node_id:
+      type: string
+    endpoint:
+      type: string
+  required:
+    - node_id
+    - endpoint
+
+NodeListData:
+  type: object
+  additionalProperties: false
+  properties:
+    nodes:
+      type: array
+      items:
+        $ref: 'crushnode.yaml#/CrushNode'
+    count:
+      type: integer
+      minimum: 0
+  required:
+    - nodes
+    - count
+
+NodeStatus:
+  type: object
+  additionalProperties: false
+  description: REST representation of pb.NodeStatusResp.
+  properties:
+    worker_node_id:
+      type: string
+    worker_node_type:
+      type: integer
+      format: int32
+      description: pb.NodeRole enum value.
+      enum: [0, 1, 2, 4]
+    session_id:
+      type: integer
+      format: int64
+      x-go-type: uint64
+      minimum: 0
+    ack_seq:
+      type: integer
+      format: int64
+      x-go-type: uint64
+      minimum: 0
+    ts_unix:
+      type: integer
+      format: int64
+    health_status:
+      type: integer
+      format: int32
+      description: pb.HealthStatus enum value.
+      enum: [0, 1, 2, 3, 4]
+    current_config_version:
+      type: integer
+      format: int64
+      x-go-type: uint64
+      minimum: 0
+    message:
+      type: string
+  required:
+    - worker_node_id
+    - health_status

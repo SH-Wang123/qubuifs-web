@@ -1,0 +1,83 @@
+AddDataDeviceRequest:
+  type: object
+  additionalProperties: false
+  description: REST representation of pb.AddDataDeviceRequest.
+  properties:
+    node_id:
+      type: string
+    device:
+      $ref: 'crushnode.yaml#/DeviceInfo'
+    des:
+      type: string
+    force_init:
+      type: boolean
+  required:
+    - node_id
+    - device
+
+AddDataDeviceData:
+  type: object
+  additionalProperties: false
+  description: REST representation of pb.AddDataDeviceResponse.
+  properties:
+    device_uuid:
+      type: string
+    qfs_prefix:
+      type: integer
+      format: int64
+      x-go-type: uint64
+      minimum: 0
+    node_id:
+      type: string
+  required:
+    - device_uuid
+    - qfs_prefix
+
+DeleteDataDeviceData:
+  type: object
+  additionalProperties: false
+  description: REST representation of pb.DeleteDataDeviceResponse.
+  properties:
+    code:
+      type: integer
+      format: int32
+    message:
+      type: string
+  required:
+    - code
+    - message
+
+DeviceListData:
+  type: object
+  additionalProperties: false
+  description: REST representation of pb.GetDevicesResponse.
+  properties:
+    node_id:
+      type: string
+    devices:
+      type: array
+      items:
+        $ref: 'crushnode.yaml#/DeviceInfo'
+  required:
+    - node_id
+    - devices
+
+DeleteDataDeviceRequest:
+  type: object
+  additionalProperties: false
+  description: REST representation of pb.DeleteDataDeviceRequest.
+  properties:
+    qfs_prefix:
+      type: integer
+      format: int64
+      x-go-type: uint64
+      minimum: 0
+    phy_path:
+      type: string
+    node_id:
+      type: string
+    device_uuid:
+      type: string
+  required:
+    - node_id
+    - device_uuid

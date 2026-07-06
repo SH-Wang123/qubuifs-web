@@ -1,0 +1,58 @@
+parameters:
+  - name: fs_uuid
+    in: path
+    required: true
+    schema:
+      type: string
+
+post:
+  tags:
+    - QubuiFS
+  summary: Register QubuiFS topology node
+  operationId: RegisterQubuiFSTopologyNode
+  description: Register one node into the topology of a specific QubuiFS.
+  requestBody:
+    required: true
+    description: Namespace, fs_uuid and node_id used to register one node in the filesystem topology.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/qubuifs.yaml#/QubuiFSTopologyNodeRequest'
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/qubuifs.yaml#/QubuiFSTopologyNodeData'
+
+delete:
+  tags:
+    - QubuiFS
+  summary: Unregister QubuiFS topology node
+  operationId: UnregisterQubuiFSTopologyNode
+  description: Unregister one node from the topology of a specific QubuiFS.
+  requestBody:
+    required: true
+    description: Namespace, fs_uuid and node_id used to unregister one node from the filesystem topology.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/qubuifs.yaml#/QubuiFSTopologyNodeRequest'
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/qubuifs.yaml#/QubuiFSTopologyNodeData'

@@ -1,0 +1,37 @@
+parameters:
+  - name: node_id
+    in: path
+    required: true
+    schema:
+      type: string
+  - name: device_uuid
+    in: path
+    required: true
+    schema:
+      type: string
+
+delete:
+  tags:
+    - DataDevice
+  summary: Delete data device
+  description: Detach a data device from the selected node. Optional request body is aligned with pb.DeleteDataDeviceRequest.
+  operationId: DeleteDataDevice
+  requestBody:
+    required: false
+    description: Optional delete details. node_id and device_uuid should match the path parameters when supplied.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/datadevice.yaml#/DeleteDataDeviceRequest'
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/datadevice.yaml#/DeleteDataDeviceData'

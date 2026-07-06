@@ -1,0 +1,17 @@
+ExportMetadataRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    dest:
+      type: string
+  required:
+    - dest
+
+ExportMetadataData:
+  type: object
+  additionalProperties: false
+  properties:
+    dest:
+      type: string
+  required:
+    - dest

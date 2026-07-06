@@ -1,0 +1,39 @@
+parameters:
+  - name: fs_uuid
+    in: path
+    required: true
+    schema:
+      type: string
+
+get:
+  summary: Get QubuiFS
+  operationId: GetQubuiFS
+  description: Get one managed QubuiFS instance by fs_uuid.
+  tags:
+    - QubuiFS
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/qubuifs.yaml#/QubuiFS'
+
+delete:
+  summary: Delete QubuiFS
+  operationId: DeleteQubuiFS
+  description: Unmount and remove one managed QubuiFS instance by fs_uuid.
+  tags:
+    - QubuiFS
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/common.yaml#/StandardResponse'

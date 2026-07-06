@@ -1,0 +1,44 @@
+get:
+  tags:
+    - Node
+  summary: List nodes
+  operationId: ListNodes
+  description: List registered control-plane topology nodes.
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/node.yaml#/NodeListData'
+
+post:
+  tags:
+    - Node
+  summary: Add node
+  operationId: AddNode
+  description: Add a node resource into the control-plane topology.
+  requestBody:
+    required: true
+    description: Node metadata aligned with pb.CrushNode.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/node.yaml#/RegisterNodeRequest'
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/node.yaml#/RegisterNodeData'

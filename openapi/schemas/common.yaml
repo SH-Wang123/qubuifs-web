@@ -1,0 +1,59 @@
+StandardResponse:
+  type: object
+  additionalProperties: false
+  properties:
+    code:
+      type: integer
+      description: Application status code. Zero means success.
+    message:
+      type: string
+    data:
+      nullable: true
+      description: Operation-specific response payload.
+  required:
+    - code
+    - message
+
+HealthzData:
+  type: object
+  additionalProperties: false
+  properties:
+    status:
+      type: string
+      enum:
+        - ok
+  required:
+    - status
+
+ReadyzData:
+  type: object
+  additionalProperties: false
+  properties:
+    ready:
+      type: boolean
+    reason:
+      type: string
+  required:
+    - ready
+
+VersionData:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: string
+    git_commit:
+      type: string
+    build_time:
+      type: string
+  required:
+    - version
+
+ErrorData:
+  type: object
+  additionalProperties: false
+  properties:
+    field:
+      type: string
+    reason:
+      type: string

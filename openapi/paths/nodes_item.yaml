@@ -1,0 +1,39 @@
+parameters:
+  - name: node_id
+    in: path
+    required: true
+    schema:
+      type: string
+
+get:
+  tags:
+    - Node
+  summary: Get node
+  operationId: GetNode
+  description: Get one registered node by node_id.
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/crushnode.yaml#/CrushNode'
+
+delete:
+  tags:
+    - Node
+  summary: Delete node
+  operationId: DeleteNode
+  description: Delete one node resource from the control-plane topology.
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/common.yaml#/StandardResponse'

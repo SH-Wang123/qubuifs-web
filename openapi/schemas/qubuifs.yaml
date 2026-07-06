@@ -1,0 +1,161 @@
+QubuiFS:
+  type: object
+  additionalProperties: false
+  description: REST representation of pb.QubuiFS.
+  properties:
+    fs_uuid:
+      type: string
+      description: pb.QubuiFS.fs_uuid.
+    fs_id:
+      type: integer
+      format: int64
+      description: pb.QubuiFS.fs_id.
+    disk_labels:
+      type: array
+      description: pb.QubuiFS.disk_labels.
+      items:
+        $ref: '#/DiskLabel'
+    namespace:
+      type: string
+      description: pb.QubuiFS.namespace.
+    mount_info:
+      type: array
+      description: pb.QubuiFS.mount_info.
+      items:
+        $ref: '#/MountInfo'
+    meta_node_id:
+      type: array
+      description: pb.QubuiFS.meta_node_id.
+      items:
+        type: string
+    data_node_id:
+      type: array
+      description: pb.QubuiFS.data_node_id.
+      items:
+        type: string
+  required:
+    - fs_uuid
+    - namespace
+
+MountInfo:
+  type: object
+  additionalProperties: false
+  description: REST representation of pb.MountInfo.
+  properties:
+    path:
+      type: string
+    node_id:
+      type: string
+  required:
+    - path
+    - node_id
+
+DiskLabel:
+  type: object
+  additionalProperties: false
+  description: REST representation of pb.DiskLabel.
+  properties:
+    fs_uuid:
+      type: string
+    device_uuid:
+      type: string
+    qfs_prefix:
+      type: integer
+      format: int64
+      x-go-type: uint64
+      minimum: 0
+    idx:
+      type: integer
+      format: int32
+      x-go-type: uint32
+      minimum: 0
+
+QubuiFSListData:
+  type: object
+  additionalProperties: false
+  properties:
+    filesystems:
+      type: array
+      items:
+        $ref: '#/QubuiFS'
+    count:
+      type: integer
+      minimum: 0
+  required:
+    - filesystems
+    - count
+
+QubuiFSCreateData:
+  type: object
+  additionalProperties: false
+  properties:
+    fs_uuid:
+      type: string
+  required:
+    - fs_uuid
+
+QubuiFSCreateRequest:
+  type: object
+  additionalProperties: false
+  description: Create request for QubuiFS. The REST layer builds pb.QubuiFS from these required fields.
+  properties:
+    namespace:
+      type: string
+      description: pb.QubuiFS.namespace.
+    disk_labels:
+      type: array
+      description: pb.QubuiFS.disk_labels.
+      items:
+        $ref: '#/DiskLabel'
+      minItems: 1
+    meta_node_id:
+      type: array
+      description: pb.QubuiFS.meta_node_id.
+      items:
+        type: string
+      minItems: 1
+    data_node_id:
+      type: array
+      description: pb.QubuiFS.data_node_id.
+      items:
+        type: string
+      minItems: 1
+  required:
+    - namespace
+    - disk_labels
+    - meta_node_id
+    - data_node_id
+
+QubuiFSTopologyNodeRequest:
+  type: object
+  additionalProperties: false
+  description: Request for registering or unregistering one node in a specific QubuiFS topology.
+  properties:
+    namespace:
+      type: string
+      description: pb.QubuiFS.namespace.
+    fs_uuid:
+      type: string
+      description: pb.QubuiFS.fs_uuid.
+    node_id:
+      type: string
+      description: pb.CrushNode.node_id.
+  required:
+    - namespace
+    - fs_uuid
+    - node_id
+
+QubuiFSTopologyNodeData:
+  type: object
+  additionalProperties: false
+  properties:
+    namespace:
+      type: string
+    fs_uuid:
+      type: string
+    node_id:
+      type: string
+  required:
+    - namespace
+    - fs_uuid
+    - node_id

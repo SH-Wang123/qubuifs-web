@@ -1,0 +1,51 @@
+parameters:
+  - name: node_id
+    in: path
+    required: true
+    schema:
+      type: string
+
+get:
+  tags:
+    - DataDevice
+  summary: List node devices
+  operationId: ListNodeDevices
+  description: List devices attached to one node. Response is aligned with pb.GetDevicesResponse.
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/datadevice.yaml#/DeviceListData'
+
+post:
+  tags:
+    - DataDevice
+  summary: Add data device
+  description: Attach a data device to the selected node. Request is aligned with pb.AddDataDeviceRequest.
+  operationId: AddDataDevice
+  requestBody:
+    required: true
+    description: Device details aligned with pb.AddDataDeviceRequest. node_id should match the path parameter.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/datadevice.yaml#/AddDataDeviceRequest'
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/datadevice.yaml#/AddDataDeviceData'
