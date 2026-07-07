@@ -75,11 +75,15 @@ QubuiFSListData:
   additionalProperties: false
   properties:
     filesystems:
-      type: array
-      items:
-        $ref: '#/QubuiFS'
+      type: object
+      description: Complete metadata map keyed by namespace and then fs_uuid.
+      additionalProperties:
+        type: object
+        additionalProperties:
+          $ref: '#/QubuiFS'
     count:
       type: integer
+      description: Total number of filesystems across all namespaces.
       minimum: 0
   required:
     - filesystems

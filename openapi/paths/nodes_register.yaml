@@ -1,0 +1,39 @@
+parameters:
+  - name: node_id
+    in: path
+    required: true
+    schema:
+      type: string
+
+post:
+  tags:
+    - Node
+  summary: Register node
+  operationId: RegisterNode
+  description: Register one existing node resource into the live control-plane registry.
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/node.yaml#/RegisterNodeData'
+
+delete:
+  tags:
+    - Node
+  summary: Unregister node
+  operationId: UnregisterNode
+  description: Unregister one existing node resource from the live control-plane registry.
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/common.yaml#/StandardResponse'
