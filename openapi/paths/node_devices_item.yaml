@@ -14,11 +14,11 @@ delete:
   tags:
     - DataDevice
   summary: Delete data device
-  description: Detach a data device from the selected node. Optional request body is aligned with pb.DeleteDataDeviceRequest.
+  description: Detach a data device from the selected node. Node and device identities are taken from path parameters.
   operationId: DeleteDataDevice
   requestBody:
     required: false
-    description: Optional delete details. node_id and device_uuid should match the path parameters when supplied.
+    description: Optional data-plane lookup hints.
     content:
       application/json:
         schema:

@@ -1,19 +1,23 @@
 AddDataDeviceRequest:
   type: object
   additionalProperties: false
-  description: REST representation of pb.AddDataDeviceRequest.
+  description: Device attachment input. Node identity comes from the path; device identity and prefix are returned by the data plane.
   properties:
-    node_id:
+    phy_path:
       type: string
-    device:
-      $ref: 'crushnode.yaml#/DeviceInfo'
-    des:
-      type: string
+      minLength: 1
+    dev_type:
+      type: integer
+      format: int32
+      x-go-type: uint32
+      description: Device transport type. LOCAL=0, TCP=1.
+      enum: [0, 1]
     force_init:
       type: boolean
+      default: false
   required:
-    - node_id
-    - device
+    - phy_path
+    - dev_type
 
 AddDataDeviceData:
   type: object
@@ -32,6 +36,7 @@ AddDataDeviceData:
   required:
     - device_uuid
     - qfs_prefix
+    - node_id
 
 DeleteDataDeviceData:
   type: object
@@ -65,7 +70,7 @@ DeviceListData:
 DeleteDataDeviceRequest:
   type: object
   additionalProperties: false
-  description: REST representation of pb.DeleteDataDeviceRequest.
+  description: Optional data-plane lookup hints. node_id and device_uuid come from path parameters.
   properties:
     qfs_prefix:
       type: integer
@@ -74,10 +79,3 @@ DeleteDataDeviceRequest:
       minimum: 0
     phy_path:
       type: string
-    node_id:
-      type: string
-    device_uuid:
-      type: string
-  required:
-    - node_id
-    - device_uuid

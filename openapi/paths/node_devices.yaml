@@ -32,7 +32,7 @@ post:
   operationId: AddDataDevice
   requestBody:
     required: true
-    description: Device details aligned with pb.AddDataDeviceRequest. node_id should match the path parameter.
+    description: Device path and initialization options. node_id is taken from the path parameter.
     content:
       application/json:
         schema:

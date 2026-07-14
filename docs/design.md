@@ -12,7 +12,7 @@ QubuiFS-Web 是 QubuiFS 管理面的浏览器控制台。用户进入 Web 后必
 - [ ] 容器内包含静态前端和轻量 Web 网关。
 - [ ] 浏览器只访问 Web 容器，不直接跨域访问控制面端点。
 - [ ] Web 网关负责控制面握手、会话保存、请求转发和错误归一化。
-- [ ] 控制面端点由用户在初始化页输入，例如 `http://10.0.0.12:9665`。
+- [ ] 控制面端点由用户在初始化页输入，例如 `http://10.0.0.12:9983`。
 
 推荐形态：
 
@@ -72,7 +72,7 @@ INIT -> HANDSHAKING -> CONNECTED
 ```json
 {
   "connected": true,
-  "endpoint": "http://10.0.0.12:9665",
+  "endpoint": "http://10.0.0.12:9983",
   "health": {"status": "ok"},
   "ready": {"ready": false, "reason": "not implemented"},
   "version": {"version": "dev"}

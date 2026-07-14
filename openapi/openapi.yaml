@@ -3,7 +3,7 @@ info:
   title: QubuiFS Management API
   version: 1.0.0
 servers:
-- url: http://localhost:9665
+- url: http://localhost:9983
   description: Local management REST server
 tags:
 - name: System
@@ -181,7 +181,70 @@ paths:
                           additionalProperties:
                             type: object
                             additionalProperties:
-                              $ref: '#/components/schemas/QubuiFS'
+                              type: object
+                              additionalProperties: false
+                              description: REST representation of pb.QubuiFS.
+                              properties:
+                                fs_uuid:
+                                  type: string
+                                  description: pb.QubuiFS.fs_uuid.
+                                fs_id:
+                                  type: integer
+                                  format: int64
+                                  description: pb.QubuiFS.fs_id.
+                                disk_labels:
+                                  type: array
+                                  description: pb.QubuiFS.disk_labels.
+                                  items:
+                                    type: object
+                                    additionalProperties: false
+                                    description: REST representation of pb.DiskLabel.
+                                    properties:
+                                      fs_uuid:
+                                        type: string
+                                      device_uuid:
+                                        type: string
+                                      qfs_prefix:
+                                        type: integer
+                                        format: int64
+                                        x-go-type: uint64
+                                        minimum: 0
+                                      idx:
+                                        type: integer
+                                        format: int32
+                                        x-go-type: uint32
+                                        minimum: 0
+                                namespace:
+                                  type: string
+                                  description: pb.QubuiFS.namespace.
+                                mount_info:
+                                  type: array
+                                  description: pb.QubuiFS.mount_info.
+                                  items:
+                                    type: object
+                                    additionalProperties: false
+                                    description: REST representation of pb.MountInfo.
+                                    properties:
+                                      path:
+                                        type: string
+                                      node_id:
+                                        type: string
+                                    required:
+                                    - path
+                                    - node_id
+                                meta_node_id:
+                                  type: array
+                                  description: pb.QubuiFS.meta_node_id.
+                                  items:
+                                    type: string
+                                data_node_id:
+                                  type: array
+                                  description: pb.QubuiFS.data_node_id.
+                                  items:
+                                    type: string
+                              required:
+                              - fs_uuid
+                              - namespace
                         count:
                           type: integer
                           description: Total number of filesystems across all namespaces.
@@ -192,7 +255,7 @@ paths:
     post:
       summary: Create QubuiFS
       operationId: CreateQubuiFS
-      description: Create a QubuiFS instance from the required control-plane metadata.
+      description: Create a QubuiFS instance from required control-plane metadata.
       tags:
       - QubuiFS
       requestBody:
@@ -200,7 +263,7 @@ paths:
         description: Required metadata used by the REST layer to build pb.QubuiFS.
         content:
           application/json:
-            schema: &id001
+            schema:
               type: object
               additionalProperties: false
               description: Create request for QubuiFS. The REST layer builds pb.QubuiFS
@@ -211,26 +274,23 @@ paths:
                   description: pb.QubuiFS.namespace.
                 disk_labels:
                   type: array
-                  description: pb.QubuiFS.disk_labels.
+                  description: Existing devices selected for the filesystem. fs_uuid
+                    and idx are generated by the control plane.
                   items:
                     type: object
                     additionalProperties: false
-                    description: REST representation of pb.DiskLabel.
                     properties:
-                      fs_uuid:
-                        type: string
                       device_uuid:
                         type: string
+                        minLength: 1
                       qfs_prefix:
                         type: integer
                         format: int64
                         x-go-type: uint64
-                        minimum: 0
-                      idx:
-                        type: integer
-                        format: int32
-                        x-go-type: uint32
-                        minimum: 0
+                        minimum: 1
+                    required:
+                    - device_uuid
+                    - qfs_prefix
                   minItems: 1
                 meta_node_id:
                   type: array
@@ -422,26 +482,24 @@ paths:
       description: Register one node into the topology of a specific QubuiFS.
       requestBody:
         required: true
-        description: Namespace, fs_uuid and node_id used to register one node in the filesystem topology.
+        description: Namespace and node_id used to register one node. fs_uuid is taken
+          from the path.
         content:
           application/json:
             schema:
               type: object
               additionalProperties: false
-              description: Request for registering or unregistering one node in a specific QubuiFS topology.
+              description: Request for registering or unregistering one node in a
+                specific QubuiFS topology. fs_uuid comes from the path.
               properties:
                 namespace:
                   type: string
                   description: pb.QubuiFS.namespace.
-                fs_uuid:
-                  type: string
-                  description: pb.QubuiFS.fs_uuid.
                 node_id:
                   type: string
                   description: pb.CrushNode.node_id.
               required:
               - namespace
-              - fs_uuid
               - node_id
       responses:
         '200':
@@ -488,26 +546,24 @@ paths:
       description: Unregister one node from the topology of a specific QubuiFS.
       requestBody:
         required: true
-        description: Namespace, fs_uuid and node_id used to unregister one node from the filesystem topology.
+        description: Namespace and node_id used to unregister one node. fs_uuid is
+          taken from the path.
         content:
           application/json:
             schema:
               type: object
               additionalProperties: false
-              description: Request for registering or unregistering one node in a specific QubuiFS topology.
+              description: Request for registering or unregistering one node in a
+                specific QubuiFS topology. fs_uuid comes from the path.
               properties:
                 namespace:
                   type: string
                   description: pb.QubuiFS.namespace.
-                fs_uuid:
-                  type: string
-                  description: pb.QubuiFS.fs_uuid.
                 node_id:
                   type: string
                   description: pb.CrushNode.node_id.
               required:
               - namespace
-              - fs_uuid
               - node_id
       responses:
         '200':
@@ -794,215 +850,70 @@ paths:
       - Node
       summary: Add node
       operationId: AddNode
-      description: Add a node resource into the control-plane topology.
+      description: Add a node resource. The control plane generates node_id and initializes
+        topology/runtime state.
       requestBody:
         required: true
-        description: Node metadata aligned with pb.CrushNode.
+        description: User-supplied node connection and role information.
         content:
           application/json:
             schema:
-              allOf:
-              - type: object
-                additionalProperties: false
-                description: REST representation of pb.CrushNode.
-                properties:
-                  node_id:
+              type: object
+              additionalProperties: false
+              description: Node registration input. The control plane generates node_id
+                and owns runtime/topology state.
+              properties:
+                addr:
+                  type: string
+                  minLength: 1
+                  description: Node network address or resolvable host name.
+                role:
+                  type: integer
+                  format: int32
+                  x-go-type: uint32
+                  description: Non-zero bitmask composed from META=1, DATA=2 and CONTROL=4.
+                  enum:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 7
+                parent_node_id:
+                  type: string
+                  description: Optional parent topology node. Defaults to the virtual
+                    root.
+                qdp_port:
+                  type: integer
+                  format: int32
+                  x-go-type: uint32
+                  minimum: 1
+                  maximum: 65535
+                data_rpc_port:
+                  type: integer
+                  format: int32
+                  x-go-type: uint32
+                  minimum: 1
+                  maximum: 65535
+                meta_rpc_port:
+                  type: integer
+                  format: int32
+                  x-go-type: uint32
+                  minimum: 1
+                  maximum: 65535
+                tags:
+                  type: object
+                  additionalProperties:
                     type: string
-                  type:
-                    type: integer
-                    format: int32
-                    description: pb.NodeType enum value.
-                    enum:
-                    - 0
-                    - 1
-                    - 2
-                    - 3
-                    - 4
-                    - 5
-                    - 6
-                    - 7
-                    - 8
-                  parent_node_id:
-                    type: string
-                  children:
-                    type: array
-                    items:
-                      type: string
-                  weight:
-                    type: integer
-                    format: int64
-                    x-go-type: uint64
-                    minimum: 0
-                  state:
-                    type: integer
-                    format: int32
-                    description: pb.InOutState enum value.
-                    enum:
-                    - 0
-                    - 1
-                    - 2
-                  reweight:
-                    type: number
-                    format: double
-                    minimum: 0
-                    maximum: 1
-                  device:
-                    type: array
-                    items:
-                      type: object
-                      additionalProperties: false
-                      description: REST representation of pb.DeviceInfo.
-                      properties:
-                        device_uuid:
-                          type: string
-                        qfs_prefix:
-                          type: integer
-                          format: int64
-                          x-go-type: uint64
-                          minimum: 0
-                        class:
-                          type: integer
-                          format: int32
-                          description: pb.DeviceClass enum value.
-                          enum:
-                          - 0
-                          - 1
-                          - 2
-                          - 3
-                        super_block:
-                          type: object
-                          additionalProperties: false
-                          description: REST representation of pb.SuperBlock.
-                          properties:
-                            disk_label:
-                              type: object
-                              additionalProperties: false
-                              description: REST representation of pb.DiskLabel.
-                              properties:
-                                fs_uuid:
-                                  type: string
-                                device_uuid:
-                                  type: string
-                                qfs_prefix:
-                                  type: integer
-                                  format: int64
-                                  x-go-type: uint64
-                                  minimum: 0
-                                idx:
-                                  type: integer
-                                  format: int32
-                                  x-go-type: uint32
-                                  minimum: 0
-                            version:
-                              type: integer
-                              format: int32
-                              x-go-type: uint32
-                              minimum: 0
-                            magic_num:
-                              type: integer
-                              format: int64
-                              x-go-type: uint64
-                              minimum: 0
-                            checksum:
-                              type: integer
-                              format: int32
-                              x-go-type: uint32
-                              minimum: 0
-                            size:
-                              type: integer
-                              format: int64
-                              x-go-type: uint64
-                              minimum: 0
-                            io_size:
-                              type: integer
-                              format: int32
-                              x-go-type: uint32
-                              minimum: 0
-                            access:
-                              type: integer
-                              format: int32
-                              x-go-type: uint32
-                              minimum: 0
-                            block_size:
-                              type: integer
-                              format: int32
-                              x-go-type: uint32
-                              minimum: 0
-                            dir_len:
-                              type: integer
-                              format: int32
-                              x-go-type: uint32
-                              minimum: 0
-                            epoch_head:
-                              type: integer
-                              format: int64
-                              x-go-type: uint64
-                              minimum: 0
-                            generation:
-                              type: integer
-                              format: int64
-                              x-go-type: uint64
-                              minimum: 0
-                        cap:
-                          type: integer
-                          format: int64
-                          x-go-type: uint64
-                          minimum: 0
-                        phy_path:
-                          type: string
-                        devType:
-                          type: integer
-                          format: int32
-                          x-go-name: DevType
-                          description: pb.DeviceInfo.devType.
-                      required:
-                      - phy_path
-                      - devType
-                  tags:
-                    type: object
-                    additionalProperties:
-                      type: string
-                  addr:
-                    type: string
-                  qdp_port:
-                    type: integer
-                    format: int32
-                    x-go-type: uint32
-                    minimum: 0
-                  data_rpc_port:
-                    type: integer
-                    format: int32
-                    x-go-type: uint32
-                    minimum: 0
-                  meta_rpc_port:
-                    type: integer
-                    format: int32
-                    x-go-type: uint32
-                    minimum: 0
-                  des:
-                    type: string
-                  role:
-                    type: integer
-                    format: int32
-                    x-go-type: uint32
-                    minimum: 0
-                    description: Bitmask using pb.NodeRole values.
-                  fs_uuid_list:
-                    type: array
-                    items:
-                      type: string
-                  version:
-                    type: string
-                  namespace:
-                    type: string
-                required:
-                - node_id
-                - type
-                - parent_node_id
-                - state
-                - addr
-                - role
-              description: Node registration request aligned with pb.CrushNode.
+                des:
+                  type: string
+                namespace:
+                  type: string
+                  description: Optional initial namespace association.
+              required:
+              - addr
+              - role
       responses:
         '200':
           description: Success
@@ -1553,134 +1464,33 @@ paths:
       operationId: AddDataDevice
       requestBody:
         required: true
-        description: Device details aligned with pb.AddDataDeviceRequest. node_id
-          should match the path parameter.
+        description: Device path and initialization options. node_id is taken from
+          the path parameter.
         content:
           application/json:
             schema:
               type: object
               additionalProperties: false
-              description: REST representation of pb.AddDataDeviceRequest.
+              description: Device attachment input. Node identity comes from the path;
+                device identity and prefix are returned by the data plane.
               properties:
-                node_id:
+                phy_path:
                   type: string
-                device:
-                  type: object
-                  additionalProperties: false
-                  description: REST representation of pb.DeviceInfo.
-                  properties:
-                    device_uuid:
-                      type: string
-                    qfs_prefix:
-                      type: integer
-                      format: int64
-                      x-go-type: uint64
-                      minimum: 0
-                    class:
-                      type: integer
-                      format: int32
-                      description: pb.DeviceClass enum value.
-                      enum:
-                      - 0
-                      - 1
-                      - 2
-                      - 3
-                    super_block:
-                      type: object
-                      additionalProperties: false
-                      description: REST representation of pb.SuperBlock.
-                      properties:
-                        disk_label:
-                          type: object
-                          additionalProperties: false
-                          description: REST representation of pb.DiskLabel.
-                          properties:
-                            fs_uuid:
-                              type: string
-                            device_uuid:
-                              type: string
-                            qfs_prefix:
-                              type: integer
-                              format: int64
-                              x-go-type: uint64
-                              minimum: 0
-                            idx:
-                              type: integer
-                              format: int32
-                              x-go-type: uint32
-                              minimum: 0
-                        version:
-                          type: integer
-                          format: int32
-                          x-go-type: uint32
-                          minimum: 0
-                        magic_num:
-                          type: integer
-                          format: int64
-                          x-go-type: uint64
-                          minimum: 0
-                        checksum:
-                          type: integer
-                          format: int32
-                          x-go-type: uint32
-                          minimum: 0
-                        size:
-                          type: integer
-                          format: int64
-                          x-go-type: uint64
-                          minimum: 0
-                        io_size:
-                          type: integer
-                          format: int32
-                          x-go-type: uint32
-                          minimum: 0
-                        access:
-                          type: integer
-                          format: int32
-                          x-go-type: uint32
-                          minimum: 0
-                        block_size:
-                          type: integer
-                          format: int32
-                          x-go-type: uint32
-                          minimum: 0
-                        dir_len:
-                          type: integer
-                          format: int32
-                          x-go-type: uint32
-                          minimum: 0
-                        epoch_head:
-                          type: integer
-                          format: int64
-                          x-go-type: uint64
-                          minimum: 0
-                        generation:
-                          type: integer
-                          format: int64
-                          x-go-type: uint64
-                          minimum: 0
-                    cap:
-                      type: integer
-                      format: int64
-                      x-go-type: uint64
-                      minimum: 0
-                    phy_path:
-                      type: string
-                    devType:
-                      type: integer
-                      format: int32
-                      x-go-name: DevType
-                      description: pb.DeviceInfo.devType.
-                  required:
-                  - phy_path
-                  - devType
-                des:
-                  type: string
+                  minLength: 1
+                dev_type:
+                  type: integer
+                  format: int32
+                  x-go-type: uint32
+                  description: Device transport type. LOCAL=0, TCP=1.
+                  enum:
+                  - 0
+                  - 1
                 force_init:
                   type: boolean
+                  default: false
               required:
-              - node_id
-              - device
+              - phy_path
+              - dev_type
       responses:
         '200':
           description: Success
@@ -1721,6 +1531,7 @@ paths:
                       required:
                       - device_uuid
                       - qfs_prefix
+                      - node_id
   /nodes/{node_id}/devices/{device_uuid}:
     parameters:
     - name: node_id
@@ -1737,19 +1548,19 @@ paths:
       tags:
       - DataDevice
       summary: Delete data device
-      description: Detach a data device from the selected node. Optional request body
-        is aligned with pb.DeleteDataDeviceRequest.
+      description: Detach a data device from the selected node. Node and device identities
+        are taken from path parameters.
       operationId: DeleteDataDevice
       requestBody:
         required: false
-        description: Optional delete details. node_id and device_uuid should match
-          the path parameters when supplied.
+        description: Optional data-plane lookup hints.
         content:
           application/json:
             schema:
               type: object
               additionalProperties: false
-              description: REST representation of pb.DeleteDataDeviceRequest.
+              description: Optional data-plane lookup hints. node_id and device_uuid
+                come from path parameters.
               properties:
                 qfs_prefix:
                   type: integer
@@ -1758,13 +1569,6 @@ paths:
                   minimum: 0
                 phy_path:
                   type: string
-                node_id:
-                  type: string
-                device_uuid:
-                  type: string
-              required:
-              - node_id
-              - device_uuid
       responses:
         '200':
           description: Success
@@ -1910,128 +1714,6 @@ components:
           type: string
         reason:
           type: string
-    QubuiFS:
-      type: object
-      additionalProperties: false
-      description: REST representation of pb.QubuiFS.
-      properties:
-        fs_uuid:
-          type: string
-          description: pb.QubuiFS.fs_uuid.
-        fs_id:
-          type: integer
-          format: int64
-          description: pb.QubuiFS.fs_id.
-        disk_labels:
-          type: array
-          description: pb.QubuiFS.disk_labels.
-          items:
-            type: object
-            additionalProperties: false
-            description: REST representation of pb.DiskLabel.
-            properties:
-              fs_uuid:
-                type: string
-              device_uuid:
-                type: string
-              qfs_prefix:
-                type: integer
-                format: int64
-                x-go-type: uint64
-                minimum: 0
-              idx:
-                type: integer
-                format: int32
-                x-go-type: uint32
-                minimum: 0
-        namespace:
-          type: string
-          description: pb.QubuiFS.namespace.
-        mount_info:
-          type: array
-          description: pb.QubuiFS.mount_info.
-          items:
-            type: object
-            additionalProperties: false
-            description: REST representation of pb.MountInfo.
-            properties:
-              path:
-                type: string
-              node_id:
-                type: string
-            required:
-            - path
-            - node_id
-        meta_node_id:
-          type: array
-          description: pb.QubuiFS.meta_node_id.
-          items:
-            type: string
-        data_node_id:
-          type: array
-          description: pb.QubuiFS.data_node_id.
-          items:
-            type: string
-      required:
-      - fs_uuid
-      - namespace
-    QubuiFSListData:
-      type: object
-      additionalProperties: false
-      properties:
-        filesystems:
-          type: object
-          description: Complete metadata map keyed by namespace and then fs_uuid.
-          additionalProperties:
-            type: object
-            additionalProperties:
-              $ref: '#/components/schemas/QubuiFS'
-        count:
-          type: integer
-          description: Total number of filesystems across all namespaces.
-          minimum: 0
-      required:
-      - filesystems
-      - count
-    QubuiFSCreateData:
-      type: object
-      additionalProperties: false
-      properties:
-        fs_uuid:
-          type: string
-      required:
-      - fs_uuid
-    MountInfo:
-      type: object
-      additionalProperties: false
-      description: REST representation of pb.MountInfo.
-      properties:
-        path:
-          type: string
-        node_id:
-          type: string
-      required:
-      - path
-      - node_id
-    DiskLabel:
-      type: object
-      additionalProperties: false
-      description: REST representation of pb.DiskLabel.
-      properties:
-        fs_uuid:
-          type: string
-        device_uuid:
-          type: string
-        qfs_prefix:
-          type: integer
-          format: int64
-          x-go-type: uint64
-          minimum: 0
-        idx:
-          type: integer
-          format: int32
-          x-go-type: uint32
-          minimum: 0
     CrushNode:
       type: object
       additionalProperties: false
@@ -2343,55 +2025,352 @@ components:
       required:
       - phy_path
       - devType
-    NodeStatus:
+    SuperBlock:
       type: object
       additionalProperties: false
-      description: REST representation of pb.NodeStatusResp.
+      description: REST representation of pb.SuperBlock.
       properties:
-        worker_node_id:
-          type: string
-        worker_node_type:
+        disk_label:
+          type: object
+          additionalProperties: false
+          description: REST representation of pb.DiskLabel.
+          properties:
+            fs_uuid:
+              type: string
+            device_uuid:
+              type: string
+            qfs_prefix:
+              type: integer
+              format: int64
+              x-go-type: uint64
+              minimum: 0
+            idx:
+              type: integer
+              format: int32
+              x-go-type: uint32
+              minimum: 0
+        version:
           type: integer
           format: int32
-          description: pb.NodeRole enum value.
+          x-go-type: uint32
+          minimum: 0
+        magic_num:
+          type: integer
+          format: int64
+          x-go-type: uint64
+          minimum: 0
+        checksum:
+          type: integer
+          format: int32
+          x-go-type: uint32
+          minimum: 0
+        size:
+          type: integer
+          format: int64
+          x-go-type: uint64
+          minimum: 0
+        io_size:
+          type: integer
+          format: int32
+          x-go-type: uint32
+          minimum: 0
+        access:
+          type: integer
+          format: int32
+          x-go-type: uint32
+          minimum: 0
+        block_size:
+          type: integer
+          format: int32
+          x-go-type: uint32
+          minimum: 0
+        dir_len:
+          type: integer
+          format: int32
+          x-go-type: uint32
+          minimum: 0
+        epoch_head:
+          type: integer
+          format: int64
+          x-go-type: uint64
+          minimum: 0
+        generation:
+          type: integer
+          format: int64
+          x-go-type: uint64
+          minimum: 0
+    AddDataDeviceRequest:
+      type: object
+      additionalProperties: false
+      description: Device attachment input. Node identity comes from the path; device
+        identity and prefix are returned by the data plane.
+      properties:
+        phy_path:
+          type: string
+          minLength: 1
+        dev_type:
+          type: integer
+          format: int32
+          x-go-type: uint32
+          description: Device transport type. LOCAL=0, TCP=1.
           enum:
           - 0
           - 1
-          - 2
-          - 4
-        session_id:
+        force_init:
+          type: boolean
+          default: false
+      required:
+      - phy_path
+      - dev_type
+    AddDataDeviceData:
+      type: object
+      additionalProperties: false
+      description: REST representation of pb.AddDataDeviceResponse.
+      properties:
+        device_uuid:
+          type: string
+        qfs_prefix:
           type: integer
           format: int64
           x-go-type: uint64
           minimum: 0
-        ack_seq:
-          type: integer
-          format: int64
-          x-go-type: uint64
-          minimum: 0
-        ts_unix:
-          type: integer
-          format: int64
-        health_status:
+        node_id:
+          type: string
+      required:
+      - device_uuid
+      - qfs_prefix
+      - node_id
+    DeleteDataDeviceData:
+      type: object
+      additionalProperties: false
+      description: REST representation of pb.DeleteDataDeviceResponse.
+      properties:
+        code:
           type: integer
           format: int32
-          description: pb.HealthStatus enum value.
+        message:
+          type: string
+      required:
+      - code
+      - message
+    DeviceListData:
+      type: object
+      additionalProperties: false
+      description: REST representation of pb.GetDevicesResponse.
+      properties:
+        node_id:
+          type: string
+        devices:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            description: REST representation of pb.DeviceInfo.
+            properties:
+              device_uuid:
+                type: string
+              qfs_prefix:
+                type: integer
+                format: int64
+                x-go-type: uint64
+                minimum: 0
+              class:
+                type: integer
+                format: int32
+                description: pb.DeviceClass enum value.
+                enum:
+                - 0
+                - 1
+                - 2
+                - 3
+              super_block:
+                type: object
+                additionalProperties: false
+                description: REST representation of pb.SuperBlock.
+                properties:
+                  disk_label:
+                    type: object
+                    additionalProperties: false
+                    description: REST representation of pb.DiskLabel.
+                    properties:
+                      fs_uuid:
+                        type: string
+                      device_uuid:
+                        type: string
+                      qfs_prefix:
+                        type: integer
+                        format: int64
+                        x-go-type: uint64
+                        minimum: 0
+                      idx:
+                        type: integer
+                        format: int32
+                        x-go-type: uint32
+                        minimum: 0
+                  version:
+                    type: integer
+                    format: int32
+                    x-go-type: uint32
+                    minimum: 0
+                  magic_num:
+                    type: integer
+                    format: int64
+                    x-go-type: uint64
+                    minimum: 0
+                  checksum:
+                    type: integer
+                    format: int32
+                    x-go-type: uint32
+                    minimum: 0
+                  size:
+                    type: integer
+                    format: int64
+                    x-go-type: uint64
+                    minimum: 0
+                  io_size:
+                    type: integer
+                    format: int32
+                    x-go-type: uint32
+                    minimum: 0
+                  access:
+                    type: integer
+                    format: int32
+                    x-go-type: uint32
+                    minimum: 0
+                  block_size:
+                    type: integer
+                    format: int32
+                    x-go-type: uint32
+                    minimum: 0
+                  dir_len:
+                    type: integer
+                    format: int32
+                    x-go-type: uint32
+                    minimum: 0
+                  epoch_head:
+                    type: integer
+                    format: int64
+                    x-go-type: uint64
+                    minimum: 0
+                  generation:
+                    type: integer
+                    format: int64
+                    x-go-type: uint64
+                    minimum: 0
+              cap:
+                type: integer
+                format: int64
+                x-go-type: uint64
+                minimum: 0
+              phy_path:
+                type: string
+              devType:
+                type: integer
+                format: int32
+                x-go-name: DevType
+                description: pb.DeviceInfo.devType.
+            required:
+            - phy_path
+            - devType
+      required:
+      - node_id
+      - devices
+    DeleteDataDeviceRequest:
+      type: object
+      additionalProperties: false
+      description: Optional data-plane lookup hints. node_id and device_uuid come
+        from path parameters.
+      properties:
+        qfs_prefix:
+          type: integer
+          format: int64
+          x-go-type: uint64
+          minimum: 0
+        phy_path:
+          type: string
+    ExportMetadataRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        dest:
+          type: string
+      required:
+      - dest
+    ExportMetadataData:
+      type: object
+      additionalProperties: false
+      properties:
+        dest:
+          type: string
+      required:
+      - dest
+    RegisterNodeRequest:
+      type: object
+      additionalProperties: false
+      description: Node registration input. The control plane generates node_id and
+        owns runtime/topology state.
+      properties:
+        addr:
+          type: string
+          minLength: 1
+          description: Node network address or resolvable host name.
+        role:
+          type: integer
+          format: int32
+          x-go-type: uint32
+          description: Non-zero bitmask composed from META=1, DATA=2 and CONTROL=4.
           enum:
-          - 0
           - 1
           - 2
           - 3
           - 4
-        current_config_version:
+          - 5
+          - 6
+          - 7
+        parent_node_id:
+          type: string
+          description: Optional parent topology node. Defaults to the virtual root.
+        qdp_port:
           type: integer
-          format: int64
-          x-go-type: uint64
-          minimum: 0
-        message:
+          format: int32
+          x-go-type: uint32
+          minimum: 1
+          maximum: 65535
+        data_rpc_port:
+          type: integer
+          format: int32
+          x-go-type: uint32
+          minimum: 1
+          maximum: 65535
+        meta_rpc_port:
+          type: integer
+          format: int32
+          x-go-type: uint32
+          minimum: 1
+          maximum: 65535
+        tags:
+          type: object
+          additionalProperties:
+            type: string
+        des:
+          type: string
+        namespace:
+          type: string
+          description: Optional initial namespace association.
+      required:
+      - addr
+      - role
+    RegisterNodeData:
+      type: object
+      additionalProperties: false
+      properties:
+        node_id:
+          type: string
+        endpoint:
           type: string
       required:
-      - worker_node_id
-      - health_status
+      - node_id
+      - endpoint
     NodeListData:
       type: object
       additionalProperties: false
@@ -2605,388 +2584,77 @@ components:
       required:
       - nodes
       - count
-    RegisterNodeRequest:
-      allOf:
-      - type: object
-        additionalProperties: false
-        description: REST representation of pb.CrushNode.
-        properties:
-          node_id:
-            type: string
-          type:
-            type: integer
-            format: int32
-            description: pb.NodeType enum value.
-            enum:
-            - 0
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-            - 7
-            - 8
-          parent_node_id:
-            type: string
-          children:
-            type: array
-            items:
-              type: string
-          weight:
-            type: integer
-            format: int64
-            x-go-type: uint64
-            minimum: 0
-          state:
-            type: integer
-            format: int32
-            description: pb.InOutState enum value.
-            enum:
-            - 0
-            - 1
-            - 2
-          reweight:
-            type: number
-            format: double
-            minimum: 0
-            maximum: 1
-          device:
-            type: array
-            items:
-              type: object
-              additionalProperties: false
-              description: REST representation of pb.DeviceInfo.
-              properties:
-                device_uuid:
-                  type: string
-                qfs_prefix:
-                  type: integer
-                  format: int64
-                  x-go-type: uint64
-                  minimum: 0
-                class:
-                  type: integer
-                  format: int32
-                  description: pb.DeviceClass enum value.
-                  enum:
-                  - 0
-                  - 1
-                  - 2
-                  - 3
-                super_block:
-                  type: object
-                  additionalProperties: false
-                  description: REST representation of pb.SuperBlock.
-                  properties:
-                    disk_label:
-                      type: object
-                      additionalProperties: false
-                      description: REST representation of pb.DiskLabel.
-                      properties:
-                        fs_uuid:
-                          type: string
-                        device_uuid:
-                          type: string
-                        qfs_prefix:
-                          type: integer
-                          format: int64
-                          x-go-type: uint64
-                          minimum: 0
-                        idx:
-                          type: integer
-                          format: int32
-                          x-go-type: uint32
-                          minimum: 0
-                    version:
-                      type: integer
-                      format: int32
-                      x-go-type: uint32
-                      minimum: 0
-                    magic_num:
-                      type: integer
-                      format: int64
-                      x-go-type: uint64
-                      minimum: 0
-                    checksum:
-                      type: integer
-                      format: int32
-                      x-go-type: uint32
-                      minimum: 0
-                    size:
-                      type: integer
-                      format: int64
-                      x-go-type: uint64
-                      minimum: 0
-                    io_size:
-                      type: integer
-                      format: int32
-                      x-go-type: uint32
-                      minimum: 0
-                    access:
-                      type: integer
-                      format: int32
-                      x-go-type: uint32
-                      minimum: 0
-                    block_size:
-                      type: integer
-                      format: int32
-                      x-go-type: uint32
-                      minimum: 0
-                    dir_len:
-                      type: integer
-                      format: int32
-                      x-go-type: uint32
-                      minimum: 0
-                    epoch_head:
-                      type: integer
-                      format: int64
-                      x-go-type: uint64
-                      minimum: 0
-                    generation:
-                      type: integer
-                      format: int64
-                      x-go-type: uint64
-                      minimum: 0
-                cap:
-                  type: integer
-                  format: int64
-                  x-go-type: uint64
-                  minimum: 0
-                phy_path:
-                  type: string
-                devType:
-                  type: integer
-                  format: int32
-                  x-go-name: DevType
-                  description: pb.DeviceInfo.devType.
-              required:
-              - phy_path
-              - devType
-          tags:
-            type: object
-            additionalProperties:
-              type: string
-          addr:
-            type: string
-          qdp_port:
-            type: integer
-            format: int32
-            x-go-type: uint32
-            minimum: 0
-          data_rpc_port:
-            type: integer
-            format: int32
-            x-go-type: uint32
-            minimum: 0
-          meta_rpc_port:
-            type: integer
-            format: int32
-            x-go-type: uint32
-            minimum: 0
-          des:
-            type: string
-          role:
-            type: integer
-            format: int32
-            x-go-type: uint32
-            minimum: 0
-            description: Bitmask using pb.NodeRole values.
-          fs_uuid_list:
-            type: array
-            items:
-              type: string
-          version:
-            type: string
-          namespace:
-            type: string
-        required:
-        - node_id
-        - type
-        - parent_node_id
-        - state
-        - addr
-        - role
-      description: Node registration request aligned with pb.CrushNode.
-    RegisterNodeData:
+    NodeStatus:
       type: object
       additionalProperties: false
+      description: REST representation of pb.NodeStatusResp.
       properties:
-        node_id:
+        worker_node_id:
           type: string
-        endpoint:
-          type: string
-      required:
-      - node_id
-      - endpoint
-    AddDataDeviceRequest:
-      type: object
-      additionalProperties: false
-      description: REST representation of pb.AddDataDeviceRequest.
-      properties:
-        node_id:
-          type: string
-        device:
-          type: object
-          additionalProperties: false
-          description: REST representation of pb.DeviceInfo.
-          properties:
-            device_uuid:
-              type: string
-            qfs_prefix:
-              type: integer
-              format: int64
-              x-go-type: uint64
-              minimum: 0
-            class:
-              type: integer
-              format: int32
-              description: pb.DeviceClass enum value.
-              enum:
-              - 0
-              - 1
-              - 2
-              - 3
-            super_block:
-              type: object
-              additionalProperties: false
-              description: REST representation of pb.SuperBlock.
-              properties:
-                disk_label:
-                  type: object
-                  additionalProperties: false
-                  description: REST representation of pb.DiskLabel.
-                  properties:
-                    fs_uuid:
-                      type: string
-                    device_uuid:
-                      type: string
-                    qfs_prefix:
-                      type: integer
-                      format: int64
-                      x-go-type: uint64
-                      minimum: 0
-                    idx:
-                      type: integer
-                      format: int32
-                      x-go-type: uint32
-                      minimum: 0
-                version:
-                  type: integer
-                  format: int32
-                  x-go-type: uint32
-                  minimum: 0
-                magic_num:
-                  type: integer
-                  format: int64
-                  x-go-type: uint64
-                  minimum: 0
-                checksum:
-                  type: integer
-                  format: int32
-                  x-go-type: uint32
-                  minimum: 0
-                size:
-                  type: integer
-                  format: int64
-                  x-go-type: uint64
-                  minimum: 0
-                io_size:
-                  type: integer
-                  format: int32
-                  x-go-type: uint32
-                  minimum: 0
-                access:
-                  type: integer
-                  format: int32
-                  x-go-type: uint32
-                  minimum: 0
-                block_size:
-                  type: integer
-                  format: int32
-                  x-go-type: uint32
-                  minimum: 0
-                dir_len:
-                  type: integer
-                  format: int32
-                  x-go-type: uint32
-                  minimum: 0
-                epoch_head:
-                  type: integer
-                  format: int64
-                  x-go-type: uint64
-                  minimum: 0
-                generation:
-                  type: integer
-                  format: int64
-                  x-go-type: uint64
-                  minimum: 0
-            cap:
-              type: integer
-              format: int64
-              x-go-type: uint64
-              minimum: 0
-            phy_path:
-              type: string
-            devType:
-              type: integer
-              format: int32
-              x-go-name: DevType
-              description: pb.DeviceInfo.devType.
-          required:
-          - phy_path
-          - devType
-        des:
-          type: string
-        force_init:
-          type: boolean
-      required:
-      - node_id
-      - device
-    AddDataDeviceData:
-      type: object
-      additionalProperties: false
-      description: REST representation of pb.AddDataDeviceResponse.
-      properties:
-        device_uuid:
-          type: string
-        qfs_prefix:
+        worker_node_type:
+          type: integer
+          format: int32
+          description: pb.NodeRole enum value.
+          enum:
+          - 0
+          - 1
+          - 2
+          - 4
+        session_id:
           type: integer
           format: int64
           x-go-type: uint64
           minimum: 0
-        node_id:
-          type: string
-      required:
-      - device_uuid
-      - qfs_prefix
-    DeleteDataDeviceData:
-      type: object
-      additionalProperties: false
-      description: REST representation of pb.DeleteDataDeviceResponse.
-      properties:
-        code:
+        ack_seq:
+          type: integer
+          format: int64
+          x-go-type: uint64
+          minimum: 0
+        ts_unix:
+          type: integer
+          format: int64
+        health_status:
           type: integer
           format: int32
+          description: pb.HealthStatus enum value.
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+        current_config_version:
+          type: integer
+          format: int64
+          x-go-type: uint64
+          minimum: 0
         message:
           type: string
       required:
-      - code
-      - message
-    DeviceListData:
+      - worker_node_id
+      - health_status
+    QubuiFS:
       type: object
       additionalProperties: false
-      description: REST representation of pb.GetDevicesResponse.
+      description: REST representation of pb.QubuiFS.
       properties:
-        node_id:
+        fs_uuid:
           type: string
-        devices:
+          description: pb.QubuiFS.fs_uuid.
+        fs_id:
+          type: integer
+          format: int64
+          description: pb.QubuiFS.fs_id.
+        disk_labels:
           type: array
+          description: pb.QubuiFS.disk_labels.
           items:
             type: object
             additionalProperties: false
-            description: REST representation of pb.DeviceInfo.
+            description: REST representation of pb.DiskLabel.
             properties:
+              fs_uuid:
+                type: string
               device_uuid:
                 type: string
               qfs_prefix:
@@ -2994,21 +2662,98 @@ components:
                 format: int64
                 x-go-type: uint64
                 minimum: 0
-              class:
+              idx:
                 type: integer
                 format: int32
-                description: pb.DeviceClass enum value.
-                enum:
-                - 0
-                - 1
-                - 2
-                - 3
-              super_block:
-                type: object
-                additionalProperties: false
-                description: REST representation of pb.SuperBlock.
-                properties:
-                  disk_label:
+                x-go-type: uint32
+                minimum: 0
+        namespace:
+          type: string
+          description: pb.QubuiFS.namespace.
+        mount_info:
+          type: array
+          description: pb.QubuiFS.mount_info.
+          items:
+            type: object
+            additionalProperties: false
+            description: REST representation of pb.MountInfo.
+            properties:
+              path:
+                type: string
+              node_id:
+                type: string
+            required:
+            - path
+            - node_id
+        meta_node_id:
+          type: array
+          description: pb.QubuiFS.meta_node_id.
+          items:
+            type: string
+        data_node_id:
+          type: array
+          description: pb.QubuiFS.data_node_id.
+          items:
+            type: string
+      required:
+      - fs_uuid
+      - namespace
+    MountInfo:
+      type: object
+      additionalProperties: false
+      description: REST representation of pb.MountInfo.
+      properties:
+        path:
+          type: string
+        node_id:
+          type: string
+      required:
+      - path
+      - node_id
+    DiskLabel:
+      type: object
+      additionalProperties: false
+      description: REST representation of pb.DiskLabel.
+      properties:
+        fs_uuid:
+          type: string
+        device_uuid:
+          type: string
+        qfs_prefix:
+          type: integer
+          format: int64
+          x-go-type: uint64
+          minimum: 0
+        idx:
+          type: integer
+          format: int32
+          x-go-type: uint32
+          minimum: 0
+    QubuiFSListData:
+      type: object
+      additionalProperties: false
+      properties:
+        filesystems:
+          type: object
+          description: Complete metadata map keyed by namespace and then fs_uuid.
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: object
+              additionalProperties: false
+              description: REST representation of pb.QubuiFS.
+              properties:
+                fs_uuid:
+                  type: string
+                  description: pb.QubuiFS.fs_uuid.
+                fs_id:
+                  type: integer
+                  format: int64
+                  description: pb.QubuiFS.fs_id.
+                disk_labels:
+                  type: array
+                  description: pb.QubuiFS.disk_labels.
+                  items:
                     type: object
                     additionalProperties: false
                     description: REST representation of pb.DiskLabel.
@@ -3027,88 +2772,139 @@ components:
                         format: int32
                         x-go-type: uint32
                         minimum: 0
-                  version:
-                    type: integer
-                    format: int32
-                    x-go-type: uint32
-                    minimum: 0
-                  magic_num:
-                    type: integer
-                    format: int64
-                    x-go-type: uint64
-                    minimum: 0
-                  checksum:
-                    type: integer
-                    format: int32
-                    x-go-type: uint32
-                    minimum: 0
-                  size:
-                    type: integer
-                    format: int64
-                    x-go-type: uint64
-                    minimum: 0
-                  io_size:
-                    type: integer
-                    format: int32
-                    x-go-type: uint32
-                    minimum: 0
-                  access:
-                    type: integer
-                    format: int32
-                    x-go-type: uint32
-                    minimum: 0
-                  block_size:
-                    type: integer
-                    format: int32
-                    x-go-type: uint32
-                    minimum: 0
-                  dir_len:
-                    type: integer
-                    format: int32
-                    x-go-type: uint32
-                    minimum: 0
-                  epoch_head:
-                    type: integer
-                    format: int64
-                    x-go-type: uint64
-                    minimum: 0
-                  generation:
-                    type: integer
-                    format: int64
-                    x-go-type: uint64
-                    minimum: 0
-              cap:
+                namespace:
+                  type: string
+                  description: pb.QubuiFS.namespace.
+                mount_info:
+                  type: array
+                  description: pb.QubuiFS.mount_info.
+                  items:
+                    type: object
+                    additionalProperties: false
+                    description: REST representation of pb.MountInfo.
+                    properties:
+                      path:
+                        type: string
+                      node_id:
+                        type: string
+                    required:
+                    - path
+                    - node_id
+                meta_node_id:
+                  type: array
+                  description: pb.QubuiFS.meta_node_id.
+                  items:
+                    type: string
+                data_node_id:
+                  type: array
+                  description: pb.QubuiFS.data_node_id.
+                  items:
+                    type: string
+              required:
+              - fs_uuid
+              - namespace
+        count:
+          type: integer
+          description: Total number of filesystems across all namespaces.
+          minimum: 0
+      required:
+      - filesystems
+      - count
+    QubuiFSCreateData:
+      type: object
+      additionalProperties: false
+      properties:
+        fs_uuid:
+          type: string
+      required:
+      - fs_uuid
+    QubuiFSCreateRequest:
+      type: object
+      additionalProperties: false
+      description: Create request for QubuiFS. The REST layer builds pb.QubuiFS from
+        these required fields.
+      properties:
+        namespace:
+          type: string
+          description: pb.QubuiFS.namespace.
+        disk_labels:
+          type: array
+          description: Existing devices selected for the filesystem. fs_uuid and idx
+            are generated by the control plane.
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              device_uuid:
+                type: string
+                minLength: 1
+              qfs_prefix:
                 type: integer
                 format: int64
                 x-go-type: uint64
-                minimum: 0
-              phy_path:
-                type: string
-              devType:
-                type: integer
-                format: int32
-                x-go-name: DevType
-                description: pb.DeviceInfo.devType.
+                minimum: 1
             required:
-            - phy_path
-            - devType
+            - device_uuid
+            - qfs_prefix
+          minItems: 1
+        meta_node_id:
+          type: array
+          description: pb.QubuiFS.meta_node_id.
+          items:
+            type: string
+          minItems: 1
+        data_node_id:
+          type: array
+          description: pb.QubuiFS.data_node_id.
+          items:
+            type: string
+          minItems: 1
       required:
+      - namespace
+      - disk_labels
+      - meta_node_id
+      - data_node_id
+    QubuiFSDiskRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        device_uuid:
+          type: string
+          minLength: 1
+        qfs_prefix:
+          type: integer
+          format: int64
+          x-go-type: uint64
+          minimum: 1
+      required:
+      - device_uuid
+      - qfs_prefix
+    QubuiFSTopologyNodeRequest:
+      type: object
+      additionalProperties: false
+      description: Request for registering or unregistering one node in a specific
+        QubuiFS topology. fs_uuid comes from the path.
+      properties:
+        namespace:
+          type: string
+          description: pb.QubuiFS.namespace.
+        node_id:
+          type: string
+          description: pb.CrushNode.node_id.
+      required:
+      - namespace
       - node_id
-      - devices
-    ExportMetadataRequest:
+    QubuiFSTopologyNodeData:
       type: object
       additionalProperties: false
       properties:
-        dest:
+        namespace:
+          type: string
+        fs_uuid:
+          type: string
+        node_id:
           type: string
       required:
-      - dest
-    ExportMetadataData:
-      type: object
-      additionalProperties: false
-      properties:
-        dest:
-          type: string
-      required:
-      - dest
-    QubuiFSCreateRequest: *id001
+      - namespace
+      - fs_uuid
+      - node_id

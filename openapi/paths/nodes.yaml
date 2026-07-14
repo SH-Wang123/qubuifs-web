@@ -22,10 +22,10 @@ post:
     - Node
   summary: Add node
   operationId: AddNode
-  description: Add a node resource into the control-plane topology.
+  description: Add a node resource. The control plane generates node_id and initializes topology/runtime state.
   requestBody:
     required: true
-    description: Node metadata aligned with pb.CrushNode.
+    description: User-supplied node connection and role information.
     content:
       application/json:
         schema:

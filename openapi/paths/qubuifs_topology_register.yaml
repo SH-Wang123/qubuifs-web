@@ -13,7 +13,7 @@ post:
   description: Register one node into the topology of a specific QubuiFS.
   requestBody:
     required: true
-    description: Namespace, fs_uuid and node_id used to register one node in the filesystem topology.
+    description: Namespace and node_id used to register one node. fs_uuid is taken from the path.
     content:
       application/json:
         schema:
@@ -39,7 +39,7 @@ delete:
   description: Unregister one node from the topology of a specific QubuiFS.
   requestBody:
     required: true
-    description: Namespace, fs_uuid and node_id used to unregister one node from the filesystem topology.
+    description: Namespace and node_id used to unregister one node. fs_uuid is taken from the path.
     content:
       application/json:
         schema:
