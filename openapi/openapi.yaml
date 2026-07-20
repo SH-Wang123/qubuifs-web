@@ -1660,6 +1660,68 @@ paths:
                       required:
                       - dest
   /meta/services:
+    get:
+      summary: List metadata services
+      operationId: ListMetaServices
+      description: List metadata services managed by the control plane.
+      tags:
+      - MetaService
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        services:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              service_id:
+                                type: string
+                              fs_uuid_list:
+                                type: array
+                                items:
+                                  type: string
+                              namespace:
+                                type: array
+                                items:
+                                  type: string
+                              des:
+                                type: string
+                              version:
+                                type: string
+                            required:
+                            - service_id
+                            - namespace
+                        count:
+                          type: integer
+                          minimum: 0
+                      required:
+                      - services
+                      - count
     post:
       summary: Create metadata service
       operationId: CreateMetaService
@@ -1729,7 +1791,241 @@ paths:
                           type: string
                       required:
                       - service_id
+  /meta/services/{service_id}:
+    parameters:
+    - name: service_id
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    get:
+      summary: Get metadata service
+      operationId: GetMetaService
+      description: Get one metadata service by service_id.
+      tags:
+      - MetaService
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        service_id:
+                          type: string
+                        fs_uuid_list:
+                          type: array
+                          items:
+                            type: string
+                        namespace:
+                          type: array
+                          items:
+                            type: string
+                        des:
+                          type: string
+                        version:
+                          type: string
+                      required:
+                      - service_id
+                      - namespace
+    put:
+      summary: Update metadata service
+      operationId: UpdateMetaService
+      description: Update mutable metadata service fields. service_id and namespace
+        are immutable.
+      tags:
+      - MetaService
+      requestBody:
+        required: true
+        description: Mutable metadata service fields.
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                fs_uuid_list:
+                  type: array
+                  items:
+                    type: string
+                    minLength: 1
+                  uniqueItems: true
+                des:
+                  type: string
+                version:
+                  type: string
+      responses:
+        '200':
+          description: Metadata service updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        service_id:
+                          type: string
+                        fs_uuid_list:
+                          type: array
+                          items:
+                            type: string
+                        namespace:
+                          type: array
+                          items:
+                            type: string
+                        des:
+                          type: string
+                        version:
+                          type: string
+                      required:
+                      - service_id
+                      - namespace
+    delete:
+      summary: Delete metadata service
+      operationId: DeleteMetaService
+      description: Delete a metadata service and its metadata instances.
+      tags:
+      - MetaService
+      responses:
+        '200':
+          description: Metadata service deleted
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        service_id:
+                          type: string
+                      required:
+                      - service_id
   /meta/services/{service_id}/instances:
+    get:
+      summary: List metadata instances
+      operationId: ListMetaInstances
+      description: List metadata instances under one metadata service.
+      tags:
+      - MetaService
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        instances:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              instance_id:
+                                type: string
+                              service_id:
+                                type: string
+                              addr:
+                                type: string
+                              meta_rpc_port:
+                                type: integer
+                                format: int32
+                                minimum: 0
+                              namespace:
+                                type: array
+                                items:
+                                  type: string
+                              image:
+                                type: string
+                              des:
+                                type: string
+                              version:
+                                type: string
+                            required:
+                            - instance_id
+                            - service_id
+                            - namespace
+                        count:
+                          type: integer
+                          minimum: 0
+                      required:
+                      - instances
+                      - count
     parameters:
     - name: service_id
       in: path
@@ -1766,6 +2062,191 @@ paths:
       responses:
         '202':
           description: Metadata instance creation accepted
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        service_id:
+                          type: string
+                        instance_id:
+                          type: string
+                      required:
+                      - service_id
+                      - instance_id
+  /meta/services/{service_id}/instances/{instance_id}:
+    parameters:
+    - name: service_id
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    - name: instance_id
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    get:
+      summary: Get metadata instance
+      operationId: GetMetaInstance
+      description: Get one metadata instance under a metadata service.
+      tags:
+      - MetaService
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        instance_id:
+                          type: string
+                        service_id:
+                          type: string
+                        addr:
+                          type: string
+                        meta_rpc_port:
+                          type: integer
+                          format: int32
+                          minimum: 0
+                        namespace:
+                          type: array
+                          items:
+                            type: string
+                        image:
+                          type: string
+                        des:
+                          type: string
+                        version:
+                          type: string
+                      required:
+                      - instance_id
+                      - service_id
+                      - namespace
+    put:
+      summary: Update metadata instance
+      operationId: UpdateMetaInstance
+      description: Update mutable metadata instance fields. instance_id and service_id
+        are immutable.
+      tags:
+      - MetaService
+      requestBody:
+        required: true
+        description: Mutable metadata instance fields.
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                image:
+                  type: string
+                  minLength: 1
+                des:
+                  type: string
+                version:
+                  type: string
+      responses:
+        '200':
+          description: Metadata instance updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        instance_id:
+                          type: string
+                        service_id:
+                          type: string
+                        addr:
+                          type: string
+                        meta_rpc_port:
+                          type: integer
+                          format: int32
+                          minimum: 0
+                        namespace:
+                          type: array
+                          items:
+                            type: string
+                        image:
+                          type: string
+                        des:
+                          type: string
+                        version:
+                          type: string
+                      required:
+                      - instance_id
+                      - service_id
+                      - namespace
+    delete:
+      summary: Delete metadata instance
+      operationId: DeleteMetaInstance
+      description: Delete one metadata instance under a metadata service.
+      tags:
+      - MetaService
+      responses:
+        '200':
+          description: Metadata instance deleted
           content:
             application/json:
               schema:
@@ -2478,6 +2959,82 @@ components:
           type: string
       required:
       - service_id
+    MetaServiceData:
+      type: object
+      additionalProperties: false
+      properties:
+        service_id:
+          type: string
+        fs_uuid_list:
+          type: array
+          items:
+            type: string
+        namespace:
+          type: array
+          items:
+            type: string
+        des:
+          type: string
+        version:
+          type: string
+      required:
+      - service_id
+      - namespace
+    MetaServiceListData:
+      type: object
+      additionalProperties: false
+      properties:
+        services:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              service_id:
+                type: string
+              fs_uuid_list:
+                type: array
+                items:
+                  type: string
+              namespace:
+                type: array
+                items:
+                  type: string
+              des:
+                type: string
+              version:
+                type: string
+            required:
+            - service_id
+            - namespace
+        count:
+          type: integer
+          minimum: 0
+      required:
+      - services
+      - count
+    MetaServiceUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        fs_uuid_list:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          uniqueItems: true
+        des:
+          type: string
+        version:
+          type: string
+    MetaServiceDeleteData:
+      type: object
+      additionalProperties: false
+      properties:
+        service_id:
+          type: string
+      required:
+      - service_id
     MetaInstanceCreateRequest:
       type: object
       additionalProperties: false
@@ -2492,6 +3049,96 @@ components:
         version:
           type: string
     MetaInstanceCreateData:
+      type: object
+      additionalProperties: false
+      properties:
+        service_id:
+          type: string
+        instance_id:
+          type: string
+      required:
+      - service_id
+      - instance_id
+    MetaInstanceData:
+      type: object
+      additionalProperties: false
+      properties:
+        instance_id:
+          type: string
+        service_id:
+          type: string
+        addr:
+          type: string
+        meta_rpc_port:
+          type: integer
+          format: int32
+          minimum: 0
+        namespace:
+          type: array
+          items:
+            type: string
+        image:
+          type: string
+        des:
+          type: string
+        version:
+          type: string
+      required:
+      - instance_id
+      - service_id
+      - namespace
+    MetaInstanceListData:
+      type: object
+      additionalProperties: false
+      properties:
+        instances:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              instance_id:
+                type: string
+              service_id:
+                type: string
+              addr:
+                type: string
+              meta_rpc_port:
+                type: integer
+                format: int32
+                minimum: 0
+              namespace:
+                type: array
+                items:
+                  type: string
+              image:
+                type: string
+              des:
+                type: string
+              version:
+                type: string
+            required:
+            - instance_id
+            - service_id
+            - namespace
+        count:
+          type: integer
+          minimum: 0
+      required:
+      - instances
+      - count
+    MetaInstanceUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        image:
+          type: string
+          minLength: 1
+        des:
+          type: string
+        version:
+          type: string
+    MetaInstanceDeleteData:
       type: object
       additionalProperties: false
       properties:

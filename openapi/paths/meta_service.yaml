@@ -1,0 +1,71 @@
+parameters:
+  - name: service_id
+    in: path
+    required: true
+    schema:
+      type: string
+      minLength: 1
+
+get:
+  summary: Get metadata service
+  operationId: GetMetaService
+  description: Get one metadata service by service_id.
+  tags:
+    - MetaService
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/metadata.yaml#/MetaServiceData'
+
+put:
+  summary: Update metadata service
+  operationId: UpdateMetaService
+  description: Update mutable metadata service fields. service_id and namespace are immutable.
+  tags:
+    - MetaService
+  requestBody:
+    required: true
+    description: Mutable metadata service fields.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/metadata.yaml#/MetaServiceUpdateRequest'
+  responses:
+    '200':
+      description: Metadata service updated
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/metadata.yaml#/MetaServiceData'
+
+delete:
+  summary: Delete metadata service
+  operationId: DeleteMetaService
+  description: Delete a metadata service and its metadata instances.
+  tags:
+    - MetaService
+  responses:
+    '200':
+      description: Metadata service deleted
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/metadata.yaml#/MetaServiceDeleteData'

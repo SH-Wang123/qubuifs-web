@@ -1,3 +1,22 @@
+get:
+  summary: List metadata services
+  operationId: ListMetaServices
+  description: List metadata services managed by the control plane.
+  tags:
+    - MetaService
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/metadata.yaml#/MetaServiceListData'
+
 post:
   summary: Create metadata service
   operationId: CreateMetaService

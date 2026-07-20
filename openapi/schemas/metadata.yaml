@@ -51,6 +51,67 @@ MetaServiceCreateData:
   required:
     - service_id
 
+MetaServiceData:
+  type: object
+  additionalProperties: false
+  properties:
+    service_id:
+      type: string
+    fs_uuid_list:
+      type: array
+      items:
+        type: string
+    namespace:
+      type: array
+      items:
+        type: string
+    des:
+      type: string
+    version:
+      type: string
+  required:
+    - service_id
+    - namespace
+
+MetaServiceListData:
+  type: object
+  additionalProperties: false
+  properties:
+    services:
+      type: array
+      items:
+        $ref: '#/MetaServiceData'
+    count:
+      type: integer
+      minimum: 0
+  required:
+    - services
+    - count
+
+MetaServiceUpdateRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    fs_uuid_list:
+      type: array
+      items:
+        type: string
+        minLength: 1
+      uniqueItems: true
+    des:
+      type: string
+    version:
+      type: string
+
+MetaServiceDeleteData:
+  type: object
+  additionalProperties: false
+  properties:
+    service_id:
+      type: string
+  required:
+    - service_id
+
 MetaInstanceCreateRequest:
   type: object
   additionalProperties: false
@@ -65,6 +126,74 @@ MetaInstanceCreateRequest:
       type: string
 
 MetaInstanceCreateData:
+  type: object
+  additionalProperties: false
+  properties:
+    service_id:
+      type: string
+    instance_id:
+      type: string
+  required:
+    - service_id
+    - instance_id
+
+MetaInstanceData:
+  type: object
+  additionalProperties: false
+  properties:
+    instance_id:
+      type: string
+    service_id:
+      type: string
+    addr:
+      type: string
+    meta_rpc_port:
+      type: integer
+      format: int32
+      minimum: 0
+    namespace:
+      type: array
+      items:
+        type: string
+    image:
+      type: string
+    des:
+      type: string
+    version:
+      type: string
+  required:
+    - instance_id
+    - service_id
+    - namespace
+
+MetaInstanceListData:
+  type: object
+  additionalProperties: false
+  properties:
+    instances:
+      type: array
+      items:
+        $ref: '#/MetaInstanceData'
+    count:
+      type: integer
+      minimum: 0
+  required:
+    - instances
+    - count
+
+MetaInstanceUpdateRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    image:
+      type: string
+      minLength: 1
+    des:
+      type: string
+    version:
+      type: string
+
+MetaInstanceDeleteData:
   type: object
   additionalProperties: false
   properties:

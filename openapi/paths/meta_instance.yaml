@@ -1,0 +1,77 @@
+parameters:
+  - name: service_id
+    in: path
+    required: true
+    schema:
+      type: string
+      minLength: 1
+  - name: instance_id
+    in: path
+    required: true
+    schema:
+      type: string
+      minLength: 1
+
+get:
+  summary: Get metadata instance
+  operationId: GetMetaInstance
+  description: Get one metadata instance under a metadata service.
+  tags:
+    - MetaService
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/metadata.yaml#/MetaInstanceData'
+
+put:
+  summary: Update metadata instance
+  operationId: UpdateMetaInstance
+  description: Update mutable metadata instance fields. instance_id and service_id are immutable.
+  tags:
+    - MetaService
+  requestBody:
+    required: true
+    description: Mutable metadata instance fields.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/metadata.yaml#/MetaInstanceUpdateRequest'
+  responses:
+    '200':
+      description: Metadata instance updated
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/metadata.yaml#/MetaInstanceData'
+
+delete:
+  summary: Delete metadata instance
+  operationId: DeleteMetaInstance
+  description: Delete one metadata instance under a metadata service.
+  tags:
+    - MetaService
+  responses:
+    '200':
+      description: Metadata instance deleted
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/metadata.yaml#/MetaInstanceDeleteData'

@@ -1,3 +1,22 @@
+get:
+  summary: List metadata instances
+  operationId: ListMetaInstances
+  description: List metadata instances under one metadata service.
+  tags:
+    - MetaService
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/metadata.yaml#/MetaInstanceListData'
+
 parameters:
   - name: service_id
     in: path
