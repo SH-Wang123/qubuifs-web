@@ -1,0 +1,25 @@
+post:
+  summary: Create metadata service
+  operationId: CreateMetaService
+  description: Create a logical metadata service. The control plane generates service_id.
+  tags:
+    - MetaService
+  requestBody:
+    required: true
+    description: Metadata service scope and descriptive information.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/metadata.yaml#/MetaServiceCreateRequest'
+  responses:
+    '201':
+      description: Metadata service created
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/metadata.yaml#/MetaServiceCreateData'

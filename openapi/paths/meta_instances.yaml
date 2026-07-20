@@ -1,0 +1,33 @@
+parameters:
+  - name: service_id
+    in: path
+    required: true
+    schema:
+      type: string
+      minLength: 1
+
+post:
+  summary: Create metadata service instance
+  operationId: CreateMetaInstance
+  description: Request a runtime instance under an existing metadata service. The control plane generates instance_id and the operator creates the Pod asynchronously.
+  tags:
+    - MetaService
+  requestBody:
+    required: true
+    description: Metadata instance workload options. Runtime address is reported after the Pod starts.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/metadata.yaml#/MetaInstanceCreateRequest'
+  responses:
+    '202':
+      description: Metadata instance creation accepted
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/metadata.yaml#/MetaInstanceCreateData'
