@@ -1,0 +1,18 @@
+get:
+  tags:
+    - System
+  summary: List component image versions
+  operationId: GetImageCatalog
+  description: Return available image versions for every deployable QubuiFS component. Components without published images return an empty array.
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/image.yaml#/ImageCatalogData'

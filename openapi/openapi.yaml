@@ -142,6 +142,146 @@ paths:
                           type: string
                       required:
                       - version
+  /images/catalog:
+    get:
+      tags:
+      - System
+      summary: List component image versions
+      operationId: GetImageCatalog
+      description: Return available image versions for every deployable QubuiFS component.
+        Components without published images return an empty array.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        meta:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              version:
+                                type: string
+                                description: Published image tag.
+                              image:
+                                type: string
+                                description: Fully qualified image reference using
+                                  the published tag.
+                              digest:
+                                type: string
+                                description: Immutable OCI image digest.
+                              pushed_at:
+                                type: string
+                                format: date-time
+                                description: Time the artifact was pushed to the image
+                                  registry.
+                            required:
+                            - version
+                            - image
+                            - digest
+                        data:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              version:
+                                type: string
+                                description: Published image tag.
+                              image:
+                                type: string
+                                description: Fully qualified image reference using
+                                  the published tag.
+                              digest:
+                                type: string
+                                description: Immutable OCI image digest.
+                              pushed_at:
+                                type: string
+                                format: date-time
+                                description: Time the artifact was pushed to the image
+                                  registry.
+                            required:
+                            - version
+                            - image
+                            - digest
+                        control_plane:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              version:
+                                type: string
+                                description: Published image tag.
+                              image:
+                                type: string
+                                description: Fully qualified image reference using
+                                  the published tag.
+                              digest:
+                                type: string
+                                description: Immutable OCI image digest.
+                              pushed_at:
+                                type: string
+                                format: date-time
+                                description: Time the artifact was pushed to the image
+                                  registry.
+                            required:
+                            - version
+                            - image
+                            - digest
+                        client:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              version:
+                                type: string
+                                description: Published image tag.
+                              image:
+                                type: string
+                                description: Fully qualified image reference using
+                                  the published tag.
+                              digest:
+                                type: string
+                                description: Immutable OCI image digest.
+                              pushed_at:
+                                type: string
+                                format: date-time
+                                description: Time the artifact was pushed to the image
+                                  registry.
+                            required:
+                            - version
+                            - image
+                            - digest
+                      required:
+                      - meta
+                      - data
+                      - control_plane
+                      - client
   /qubuifs:
     get:
       summary: List QubuiFS
@@ -2327,6 +2467,128 @@ components:
           type: string
       required:
       - version
+    ImageVersion:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+          description: Published image tag.
+        image:
+          type: string
+          description: Fully qualified image reference using the published tag.
+        digest:
+          type: string
+          description: Immutable OCI image digest.
+        pushed_at:
+          type: string
+          format: date-time
+          description: Time the artifact was pushed to the image registry.
+      required:
+      - version
+      - image
+      - digest
+    ImageCatalogData:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              version:
+                type: string
+                description: Published image tag.
+              image:
+                type: string
+                description: Fully qualified image reference using the published tag.
+              digest:
+                type: string
+                description: Immutable OCI image digest.
+              pushed_at:
+                type: string
+                format: date-time
+                description: Time the artifact was pushed to the image registry.
+            required:
+            - version
+            - image
+            - digest
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              version:
+                type: string
+                description: Published image tag.
+              image:
+                type: string
+                description: Fully qualified image reference using the published tag.
+              digest:
+                type: string
+                description: Immutable OCI image digest.
+              pushed_at:
+                type: string
+                format: date-time
+                description: Time the artifact was pushed to the image registry.
+            required:
+            - version
+            - image
+            - digest
+        control_plane:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              version:
+                type: string
+                description: Published image tag.
+              image:
+                type: string
+                description: Fully qualified image reference using the published tag.
+              digest:
+                type: string
+                description: Immutable OCI image digest.
+              pushed_at:
+                type: string
+                format: date-time
+                description: Time the artifact was pushed to the image registry.
+            required:
+            - version
+            - image
+            - digest
+        client:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              version:
+                type: string
+                description: Published image tag.
+              image:
+                type: string
+                description: Fully qualified image reference using the published tag.
+              digest:
+                type: string
+                description: Immutable OCI image digest.
+              pushed_at:
+                type: string
+                format: date-time
+                description: Time the artifact was pushed to the image registry.
+            required:
+            - version
+            - image
+            - digest
+      required:
+      - meta
+      - data
+      - control_plane
+      - client
     ErrorData:
       type: object
       additionalProperties: false

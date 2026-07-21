@@ -1,0 +1,47 @@
+ImageVersion:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: string
+      description: Published image tag.
+    image:
+      type: string
+      description: Fully qualified image reference using the published tag.
+    digest:
+      type: string
+      description: Immutable OCI image digest.
+    pushed_at:
+      type: string
+      format: date-time
+      description: Time the artifact was pushed to the image registry.
+  required:
+    - version
+    - image
+    - digest
+
+ImageCatalogData:
+  type: object
+  additionalProperties: false
+  properties:
+    meta:
+      type: array
+      items:
+        $ref: '#/ImageVersion'
+    data:
+      type: array
+      items:
+        $ref: '#/ImageVersion'
+    control_plane:
+      type: array
+      items:
+        $ref: '#/ImageVersion'
+    client:
+      type: array
+      items:
+        $ref: '#/ImageVersion'
+  required:
+    - meta
+    - data
+    - control_plane
+    - client
