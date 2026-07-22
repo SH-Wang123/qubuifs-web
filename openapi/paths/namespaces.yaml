@@ -1,0 +1,44 @@
+get:
+  summary: List namespaces
+  operationId: ListNamespaces
+  description: List namespaces managed by the control plane.
+  tags:
+    - Namespace
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/namespace.yaml#/NamespaceListData'
+
+post:
+  summary: Create namespace
+  operationId: CreateNamespace
+  description: Create a namespace used to group QubuiFS filesystems.
+  tags:
+    - Namespace
+  requestBody:
+    required: true
+    description: Namespace identity and description.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/namespace.yaml#/NamespaceCreateRequest'
+  responses:
+    '201':
+      description: Namespace created
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/namespace.yaml#/NamespaceData'

@@ -146,6 +146,17 @@ QubuiFSDiskRequest:
     - device_uuid
     - qfs_prefix
 
+QubuiFSNodeRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    node_id:
+      type: string
+      minLength: 1
+      description: Node ID that must already exist in etcd.
+  required:
+    - node_id
+
 QubuiFSTopologyNodeRequest:
   type: object
   additionalProperties: false

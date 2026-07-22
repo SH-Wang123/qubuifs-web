@@ -1,0 +1,71 @@
+parameters:
+  - name: namespace
+    in: path
+    required: true
+    schema:
+      type: string
+      minLength: 1
+
+get:
+  summary: Get namespace
+  operationId: GetNamespace
+  description: Get one namespace by name.
+  tags:
+    - Namespace
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/namespace.yaml#/NamespaceData'
+
+put:
+  summary: Update namespace
+  operationId: UpdateNamespace
+  description: Update the namespace description. The namespace name is immutable.
+  tags:
+    - Namespace
+  requestBody:
+    required: true
+    description: Mutable namespace fields.
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/namespace.yaml#/NamespaceUpdateRequest'
+  responses:
+    '200':
+      description: Namespace updated
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/namespace.yaml#/NamespaceData'
+
+delete:
+  summary: Delete namespace
+  operationId: DeleteNamespace
+  description: Delete an empty namespace that is not referenced by a metadata service.
+  tags:
+    - Namespace
+  responses:
+    '200':
+      description: Namespace deleted
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/namespace.yaml#/NamespaceDeleteData'

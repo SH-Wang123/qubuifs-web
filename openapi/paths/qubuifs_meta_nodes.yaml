@@ -1,0 +1,57 @@
+parameters:
+  - name: fs_uuid
+    in: path
+    required: true
+    schema:
+      type: string
+      minLength: 1
+
+post:
+  tags:
+    - QubuiFS
+  summary: Add metadata node to QubuiFS
+  operationId: AddQubuiFSMetaNode
+  description: Add an existing etcd-registered node ID to the filesystem metadata node list.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/qubuifs.yaml#/QubuiFSNodeRequest'
+  responses:
+    '200':
+      description: Metadata node added
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/qubuifs.yaml#/QubuiFS'
+
+delete:
+  tags:
+    - QubuiFS
+  summary: Delete metadata node from QubuiFS
+  operationId: DeleteQubuiFSMetaNode
+  description: Delete an etcd-registered node ID from the filesystem metadata node list.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/qubuifs.yaml#/QubuiFSNodeRequest'
+  responses:
+    '200':
+      description: Metadata node deleted
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/qubuifs.yaml#/QubuiFS'

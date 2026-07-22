@@ -16,6 +16,8 @@ tags:
   description: Data device management APIs
 - name: Metadata
   description: Control-plane metadata APIs
+- name: Namespace
+  description: QubuiFS namespace lifecycle APIs
 - name: MetaService
   description: Metadata service and runtime instance lifecycle APIs
 paths:
@@ -744,6 +746,694 @@ paths:
                       - namespace
                       - fs_uuid
                       - node_id
+  /qubuifs/{fs_uuid}/meta-nodes:
+    parameters:
+    - name: fs_uuid
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    post:
+      tags:
+      - QubuiFS
+      summary: Add metadata node to QubuiFS
+      operationId: AddQubuiFSMetaNode
+      description: Add an existing etcd-registered node ID to the filesystem metadata
+        node list.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                node_id:
+                  type: string
+                  minLength: 1
+                  description: Node ID that must already exist in etcd.
+              required:
+              - node_id
+      responses:
+        '200':
+          description: Metadata node added
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      description: REST representation of pb.QubuiFS.
+                      properties:
+                        fs_uuid:
+                          type: string
+                          description: pb.QubuiFS.fs_uuid.
+                        fs_id:
+                          type: integer
+                          format: int64
+                          description: pb.QubuiFS.fs_id.
+                        disk_labels:
+                          type: array
+                          description: pb.QubuiFS.disk_labels.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.DiskLabel.
+                            properties:
+                              fs_uuid:
+                                type: string
+                              device_uuid:
+                                type: string
+                              qfs_prefix:
+                                type: integer
+                                format: int64
+                                x-go-type: uint64
+                                minimum: 0
+                              idx:
+                                type: integer
+                                format: int32
+                                x-go-type: uint32
+                                minimum: 0
+                        namespace:
+                          type: string
+                          description: pb.QubuiFS.namespace.
+                        mount_info:
+                          type: array
+                          description: pb.QubuiFS.mount_info.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.MountInfo.
+                            properties:
+                              path:
+                                type: string
+                              node_id:
+                                type: string
+                            required:
+                            - path
+                            - node_id
+                        meta_node_id:
+                          type: array
+                          description: pb.QubuiFS.meta_node_id.
+                          items:
+                            type: string
+                        data_node_id:
+                          type: array
+                          description: pb.QubuiFS.data_node_id.
+                          items:
+                            type: string
+                      required:
+                      - fs_uuid
+                      - namespace
+    delete:
+      tags:
+      - QubuiFS
+      summary: Delete metadata node from QubuiFS
+      operationId: DeleteQubuiFSMetaNode
+      description: Delete an etcd-registered node ID from the filesystem metadata
+        node list.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                node_id:
+                  type: string
+                  minLength: 1
+                  description: Node ID that must already exist in etcd.
+              required:
+              - node_id
+      responses:
+        '200':
+          description: Metadata node deleted
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      description: REST representation of pb.QubuiFS.
+                      properties:
+                        fs_uuid:
+                          type: string
+                          description: pb.QubuiFS.fs_uuid.
+                        fs_id:
+                          type: integer
+                          format: int64
+                          description: pb.QubuiFS.fs_id.
+                        disk_labels:
+                          type: array
+                          description: pb.QubuiFS.disk_labels.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.DiskLabel.
+                            properties:
+                              fs_uuid:
+                                type: string
+                              device_uuid:
+                                type: string
+                              qfs_prefix:
+                                type: integer
+                                format: int64
+                                x-go-type: uint64
+                                minimum: 0
+                              idx:
+                                type: integer
+                                format: int32
+                                x-go-type: uint32
+                                minimum: 0
+                        namespace:
+                          type: string
+                          description: pb.QubuiFS.namespace.
+                        mount_info:
+                          type: array
+                          description: pb.QubuiFS.mount_info.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.MountInfo.
+                            properties:
+                              path:
+                                type: string
+                              node_id:
+                                type: string
+                            required:
+                            - path
+                            - node_id
+                        meta_node_id:
+                          type: array
+                          description: pb.QubuiFS.meta_node_id.
+                          items:
+                            type: string
+                        data_node_id:
+                          type: array
+                          description: pb.QubuiFS.data_node_id.
+                          items:
+                            type: string
+                      required:
+                      - fs_uuid
+                      - namespace
+  /qubuifs/{fs_uuid}/data-nodes:
+    parameters:
+    - name: fs_uuid
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    post:
+      tags:
+      - QubuiFS
+      summary: Add data node to QubuiFS
+      operationId: AddQubuiFSDataNode
+      description: Add an existing etcd-registered node ID to the filesystem data
+        node list.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                node_id:
+                  type: string
+                  minLength: 1
+                  description: Node ID that must already exist in etcd.
+              required:
+              - node_id
+      responses:
+        '200':
+          description: Data node added
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      description: REST representation of pb.QubuiFS.
+                      properties:
+                        fs_uuid:
+                          type: string
+                          description: pb.QubuiFS.fs_uuid.
+                        fs_id:
+                          type: integer
+                          format: int64
+                          description: pb.QubuiFS.fs_id.
+                        disk_labels:
+                          type: array
+                          description: pb.QubuiFS.disk_labels.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.DiskLabel.
+                            properties:
+                              fs_uuid:
+                                type: string
+                              device_uuid:
+                                type: string
+                              qfs_prefix:
+                                type: integer
+                                format: int64
+                                x-go-type: uint64
+                                minimum: 0
+                              idx:
+                                type: integer
+                                format: int32
+                                x-go-type: uint32
+                                minimum: 0
+                        namespace:
+                          type: string
+                          description: pb.QubuiFS.namespace.
+                        mount_info:
+                          type: array
+                          description: pb.QubuiFS.mount_info.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.MountInfo.
+                            properties:
+                              path:
+                                type: string
+                              node_id:
+                                type: string
+                            required:
+                            - path
+                            - node_id
+                        meta_node_id:
+                          type: array
+                          description: pb.QubuiFS.meta_node_id.
+                          items:
+                            type: string
+                        data_node_id:
+                          type: array
+                          description: pb.QubuiFS.data_node_id.
+                          items:
+                            type: string
+                      required:
+                      - fs_uuid
+                      - namespace
+    delete:
+      tags:
+      - QubuiFS
+      summary: Delete data node from QubuiFS
+      operationId: DeleteQubuiFSDataNode
+      description: Delete an etcd-registered node ID from the filesystem data node
+        list.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                node_id:
+                  type: string
+                  minLength: 1
+                  description: Node ID that must already exist in etcd.
+              required:
+              - node_id
+      responses:
+        '200':
+          description: Data node deleted
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      description: REST representation of pb.QubuiFS.
+                      properties:
+                        fs_uuid:
+                          type: string
+                          description: pb.QubuiFS.fs_uuid.
+                        fs_id:
+                          type: integer
+                          format: int64
+                          description: pb.QubuiFS.fs_id.
+                        disk_labels:
+                          type: array
+                          description: pb.QubuiFS.disk_labels.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.DiskLabel.
+                            properties:
+                              fs_uuid:
+                                type: string
+                              device_uuid:
+                                type: string
+                              qfs_prefix:
+                                type: integer
+                                format: int64
+                                x-go-type: uint64
+                                minimum: 0
+                              idx:
+                                type: integer
+                                format: int32
+                                x-go-type: uint32
+                                minimum: 0
+                        namespace:
+                          type: string
+                          description: pb.QubuiFS.namespace.
+                        mount_info:
+                          type: array
+                          description: pb.QubuiFS.mount_info.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.MountInfo.
+                            properties:
+                              path:
+                                type: string
+                              node_id:
+                                type: string
+                            required:
+                            - path
+                            - node_id
+                        meta_node_id:
+                          type: array
+                          description: pb.QubuiFS.meta_node_id.
+                          items:
+                            type: string
+                        data_node_id:
+                          type: array
+                          description: pb.QubuiFS.data_node_id.
+                          items:
+                            type: string
+                      required:
+                      - fs_uuid
+                      - namespace
+  /qubuifs/{fs_uuid}/disks:
+    parameters:
+    - name: fs_uuid
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    post:
+      tags:
+      - QubuiFS
+      summary: Add disk to QubuiFS
+      operationId: AddQubuiFSDisk
+      description: Add a disk label to the filesystem metadata without validating
+        the device inventory.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                device_uuid:
+                  type: string
+                  minLength: 1
+                qfs_prefix:
+                  type: integer
+                  format: int64
+                  x-go-type: uint64
+                  minimum: 1
+              required:
+              - device_uuid
+              - qfs_prefix
+      responses:
+        '200':
+          description: Disk added
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      description: REST representation of pb.QubuiFS.
+                      properties:
+                        fs_uuid:
+                          type: string
+                          description: pb.QubuiFS.fs_uuid.
+                        fs_id:
+                          type: integer
+                          format: int64
+                          description: pb.QubuiFS.fs_id.
+                        disk_labels:
+                          type: array
+                          description: pb.QubuiFS.disk_labels.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.DiskLabel.
+                            properties:
+                              fs_uuid:
+                                type: string
+                              device_uuid:
+                                type: string
+                              qfs_prefix:
+                                type: integer
+                                format: int64
+                                x-go-type: uint64
+                                minimum: 0
+                              idx:
+                                type: integer
+                                format: int32
+                                x-go-type: uint32
+                                minimum: 0
+                        namespace:
+                          type: string
+                          description: pb.QubuiFS.namespace.
+                        mount_info:
+                          type: array
+                          description: pb.QubuiFS.mount_info.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.MountInfo.
+                            properties:
+                              path:
+                                type: string
+                              node_id:
+                                type: string
+                            required:
+                            - path
+                            - node_id
+                        meta_node_id:
+                          type: array
+                          description: pb.QubuiFS.meta_node_id.
+                          items:
+                            type: string
+                        data_node_id:
+                          type: array
+                          description: pb.QubuiFS.data_node_id.
+                          items:
+                            type: string
+                      required:
+                      - fs_uuid
+                      - namespace
+    delete:
+      tags:
+      - QubuiFS
+      summary: Delete disk from QubuiFS
+      operationId: DeleteQubuiFSDisk
+      description: Delete a disk label from the filesystem metadata without validating
+        the device inventory.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                device_uuid:
+                  type: string
+                  minLength: 1
+                qfs_prefix:
+                  type: integer
+                  format: int64
+                  x-go-type: uint64
+                  minimum: 1
+              required:
+              - device_uuid
+              - qfs_prefix
+      responses:
+        '200':
+          description: Disk deleted
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      description: REST representation of pb.QubuiFS.
+                      properties:
+                        fs_uuid:
+                          type: string
+                          description: pb.QubuiFS.fs_uuid.
+                        fs_id:
+                          type: integer
+                          format: int64
+                          description: pb.QubuiFS.fs_id.
+                        disk_labels:
+                          type: array
+                          description: pb.QubuiFS.disk_labels.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.DiskLabel.
+                            properties:
+                              fs_uuid:
+                                type: string
+                              device_uuid:
+                                type: string
+                              qfs_prefix:
+                                type: integer
+                                format: int64
+                                x-go-type: uint64
+                                minimum: 0
+                              idx:
+                                type: integer
+                                format: int32
+                                x-go-type: uint32
+                                minimum: 0
+                        namespace:
+                          type: string
+                          description: pb.QubuiFS.namespace.
+                        mount_info:
+                          type: array
+                          description: pb.QubuiFS.mount_info.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.MountInfo.
+                            properties:
+                              path:
+                                type: string
+                              node_id:
+                                type: string
+                            required:
+                            - path
+                            - node_id
+                        meta_node_id:
+                          type: array
+                          description: pb.QubuiFS.meta_node_id.
+                          items:
+                            type: string
+                        data_node_id:
+                          type: array
+                          description: pb.QubuiFS.data_node_id.
+                          items:
+                            type: string
+                      required:
+                      - fs_uuid
+                      - namespace
   /nodes:
     get:
       tags:
@@ -1799,6 +2489,270 @@ paths:
                           type: string
                       required:
                       - dest
+  /namespaces:
+    get:
+      summary: List namespaces
+      operationId: ListNamespaces
+      description: List namespaces managed by the control plane.
+      tags:
+      - Namespace
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        namespaces:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              name:
+                                type: string
+                              description:
+                                type: string
+                              filesystem_count:
+                                type: integer
+                                minimum: 0
+                            required:
+                            - name
+                            - description
+                            - filesystem_count
+                        count:
+                          type: integer
+                          minimum: 0
+                      required:
+                      - namespaces
+                      - count
+    post:
+      summary: Create namespace
+      operationId: CreateNamespace
+      description: Create a namespace used to group QubuiFS filesystems.
+      tags:
+      - Namespace
+      requestBody:
+        required: true
+        description: Namespace identity and description.
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                description:
+                  type: string
+              required:
+              - name
+      responses:
+        '201':
+          description: Namespace created
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        filesystem_count:
+                          type: integer
+                          minimum: 0
+                      required:
+                      - name
+                      - description
+                      - filesystem_count
+  /namespaces/{namespace}:
+    parameters:
+    - name: namespace
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    get:
+      summary: Get namespace
+      operationId: GetNamespace
+      description: Get one namespace by name.
+      tags:
+      - Namespace
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        filesystem_count:
+                          type: integer
+                          minimum: 0
+                      required:
+                      - name
+                      - description
+                      - filesystem_count
+    put:
+      summary: Update namespace
+      operationId: UpdateNamespace
+      description: Update the namespace description. The namespace name is immutable.
+      tags:
+      - Namespace
+      requestBody:
+        required: true
+        description: Mutable namespace fields.
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                description:
+                  type: string
+              required:
+              - description
+      responses:
+        '200':
+          description: Namespace updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        filesystem_count:
+                          type: integer
+                          minimum: 0
+                      required:
+                      - name
+                      - description
+                      - filesystem_count
+    delete:
+      summary: Delete namespace
+      operationId: DeleteNamespace
+      description: Delete an empty namespace that is not referenced by a metadata
+        service.
+      tags:
+      - Namespace
+      responses:
+        '200':
+          description: Namespace deleted
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        name:
+                          type: string
+                      required:
+                      - name
   /meta/services:
     get:
       summary: List metadata services
@@ -3187,6 +4141,75 @@ components:
           type: string
       required:
       - dest
+    NamespaceCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+      required:
+      - name
+    NamespaceData:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        filesystem_count:
+          type: integer
+          minimum: 0
+      required:
+      - name
+      - description
+      - filesystem_count
+    NamespaceListData:
+      type: object
+      additionalProperties: false
+      properties:
+        namespaces:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+              filesystem_count:
+                type: integer
+                minimum: 0
+            required:
+            - name
+            - description
+            - filesystem_count
+        count:
+          type: integer
+          minimum: 0
+      required:
+      - namespaces
+      - count
+    NamespaceUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        description:
+          type: string
+      required:
+      - description
+    NamespaceDeleteData:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+      required:
+      - name
     MetaServiceCreateRequest:
       type: object
       additionalProperties: false
@@ -3986,6 +5009,16 @@ components:
       required:
       - device_uuid
       - qfs_prefix
+    QubuiFSNodeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        node_id:
+          type: string
+          minLength: 1
+          description: Node ID that must already exist in etcd.
+      required:
+      - node_id
     QubuiFSTopologyNodeRequest:
       type: object
       additionalProperties: false

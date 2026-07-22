@@ -1,0 +1,57 @@
+parameters:
+  - name: fs_uuid
+    in: path
+    required: true
+    schema:
+      type: string
+      minLength: 1
+
+post:
+  tags:
+    - QubuiFS
+  summary: Add disk to QubuiFS
+  operationId: AddQubuiFSDisk
+  description: Add a disk label to the filesystem metadata without validating the device inventory.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/qubuifs.yaml#/QubuiFSDiskRequest'
+  responses:
+    '200':
+      description: Disk added
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/qubuifs.yaml#/QubuiFS'
+
+delete:
+  tags:
+    - QubuiFS
+  summary: Delete disk from QubuiFS
+  operationId: DeleteQubuiFSDisk
+  description: Delete a disk label from the filesystem metadata without validating the device inventory.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/qubuifs.yaml#/QubuiFSDiskRequest'
+  responses:
+    '200':
+      description: Disk deleted
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/qubuifs.yaml#/QubuiFS'

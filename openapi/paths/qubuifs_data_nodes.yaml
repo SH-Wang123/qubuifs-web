@@ -1,0 +1,57 @@
+parameters:
+  - name: fs_uuid
+    in: path
+    required: true
+    schema:
+      type: string
+      minLength: 1
+
+post:
+  tags:
+    - QubuiFS
+  summary: Add data node to QubuiFS
+  operationId: AddQubuiFSDataNode
+  description: Add an existing etcd-registered node ID to the filesystem data node list.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/qubuifs.yaml#/QubuiFSNodeRequest'
+  responses:
+    '200':
+      description: Data node added
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/qubuifs.yaml#/QubuiFS'
+
+delete:
+  tags:
+    - QubuiFS
+  summary: Delete data node from QubuiFS
+  operationId: DeleteQubuiFSDataNode
+  description: Delete an etcd-registered node ID from the filesystem data node list.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/qubuifs.yaml#/QubuiFSNodeRequest'
+  responses:
+    '200':
+      description: Data node deleted
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../schemas/common.yaml#/StandardResponse'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../schemas/qubuifs.yaml#/QubuiFS'
