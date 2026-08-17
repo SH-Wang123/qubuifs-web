@@ -10,8 +10,10 @@ tags:
   description: Control-plane health and version APIs
 - name: QubuiFS
   description: Filesystem lifecycle APIs
-- name: Node
-  description: Node registration and status APIs
+- name: DataNode
+  description: DataNode registration, status, and device APIs
+- name: Cluster
+  description: Kubernetes cluster inventory APIs
 - name: DataDevice
   description: Data device management APIs
 - name: Metadata
@@ -1453,13 +1455,13 @@ paths:
                       required:
                       - fs_uuid
                       - namespace
-  /nodes:
+  /datanodes:
     get:
       tags:
-      - Node
-      summary: List nodes
-      operationId: ListNodes
-      description: List registered control-plane topology nodes.
+      - DataNode
+      summary: List DataNodes
+      operationId: ListDataNodes
+      description: List DataNodes registered with the control plane.
       responses:
         '200':
           description: Success
@@ -1487,7 +1489,7 @@ paths:
                       type: object
                       additionalProperties: false
                       properties:
-                        nodes:
+                        datanodes:
                           type: array
                           items:
                             type: object
@@ -1694,25 +1696,25 @@ paths:
                           type: integer
                           minimum: 0
                       required:
-                      - nodes
+                      - datanodes
                       - count
     post:
       tags:
-      - Node
-      summary: Add node
-      operationId: AddNode
-      description: Add a node resource. The control plane generates node_id and initializes
-        topology/runtime state.
+      - DataNode
+      summary: Register DataNode
+      operationId: RegisterDataNode
+      description: Register a DataNode. The control plane generates node_id and initializes
+        runtime state.
       requestBody:
         required: true
-        description: User-supplied node connection and role information.
+        description: DataNode connection and runtime information.
         content:
           application/json:
             schema:
               type: object
               additionalProperties: false
-              description: Node registration input. The control plane generates node_id
-                and owns runtime/topology state.
+              description: DataNode registration input. The control plane generates
+                node_id and owns runtime/topology state.
               properties:
                 addr:
                   type: string
@@ -1722,13 +1724,10 @@ paths:
                   type: integer
                   format: int32
                   x-go-type: uint32
-                  description: Non-zero bitmask composed from META=1, DATA=2 and CONTROL=4.
+                  description: Role bitmask; this endpoint requires the DATA bit (DATA=2).
                   enum:
-                  - 1
                   - 2
                   - 3
-                  - 4
-                  - 5
                   - 6
                   - 7
                 parent_node_id:
@@ -1799,19 +1798,159 @@ paths:
                       required:
                       - node_id
                       - endpoint
-  /nodes/{node_id}:
+  /cluster/datanodes:
+    get:
+      tags:
+      - Cluster
+      summary: List DataNode placement candidates
+      operationId: ListClusterDataNodes
+      description: List Kubernetes nodes with only the fields required for DataNode
+        placement.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        additionalProperties: false
+                        description: Minimal Kubernetes node information exposed for
+                          DataNode placement.
+                        properties:
+                          name:
+                            type: string
+                          qubuifs_node:
+                            type: boolean
+                            description: Whether the Kubernetes node has qubuifs.io/data-node=true.
+                          architecture:
+                            type: string
+                            description: CPU architecture reported by Kubernetes,
+                              for example amd64 or arm64.
+                        required:
+                        - name
+                        - qubuifs_node
+                        - architecture
+    post:
+      tags:
+      - Cluster
+      summary: Deploy DataNode
+      operationId: DeployDataNode
+      description: Create or reconcile one DataNode Pod on a selected Kubernetes node.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              description: DataNode Pod deployment target and published image version.
+              properties:
+                node:
+                  type: string
+                  minLength: 1
+                  description: Name of the Kubernetes node that will host the DataNode
+                    Pod.
+                image_version:
+                  type: string
+                  minLength: 1
+                  description: Published DataNode image tag, for example dev or v1.2.0.
+              required:
+              - node
+              - image_version
+      responses:
+        '202':
+          description: DataNode deployment accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: integer
+                    description: Application status code. Zero means success.
+                  message:
+                    type: string
+                  data:
+                    nullable: true
+                    description: Operation-specific response payload.
+                required:
+                - code
+                - message
+    delete:
+      tags:
+      - Cluster
+      summary: Delete DataNode
+      operationId: DeleteDataNode
+      description: Delete the DataNode Pod associated with a selected Kubernetes node.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              description: Kubernetes node whose DataNode Pod should be deleted.
+              properties:
+                node:
+                  type: string
+                  minLength: 1
+                  description: Name of the Kubernetes node hosting the DataNode Pod.
+              required:
+              - node
+      responses:
+        '202':
+          description: DataNode deletion accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: integer
+                    description: Application status code. Zero means success.
+                  message:
+                    type: string
+                  data:
+                    nullable: true
+                    description: Operation-specific response payload.
+                required:
+                - code
+                - message
+  /datanodes/{datanode_id}:
     parameters:
-    - name: node_id
+    - name: datanode_id
       in: path
       required: true
       schema:
         type: string
     get:
       tags:
-      - Node
-      summary: Get node
-      operationId: GetNode
-      description: Get one registered node by node_id.
+      - DataNode
+      summary: Get DataNode
+      operationId: GetDataNode
+      description: Get one registered DataNode by node_id.
       responses:
         '200':
           description: Success
@@ -2038,10 +2177,10 @@ paths:
                       - role
     delete:
       tags:
-      - Node
-      summary: Delete node
-      operationId: DeleteNode
-      description: Delete one node resource from the control-plane topology.
+      - DataNode
+      summary: Unregister DataNode
+      operationId: UnregisterDataNode
+      description: Remove one registered DataNode from the control-plane topology.
       responses:
         '200':
           description: Success
@@ -2062,20 +2201,20 @@ paths:
                 required:
                 - code
                 - message
-  /nodes/{node_id}/status:
+  /datanodes/{datanode_id}/status:
     parameters:
-    - name: node_id
+    - name: datanode_id
       in: path
       required: true
       schema:
         type: string
     get:
       tags:
-      - Node
-      summary: Get node status
-      operationId: GetNodeStatus
+      - DataNode
+      summary: Get DataNode status
+      operationId: GetDataNodeStatus
       description: Get the latest pb.NodeStatusResp-compatible status for a registered
-        node.
+        DataNode.
       responses:
         '200':
           description: Success
@@ -2102,7 +2241,8 @@ paths:
                     data:
                       type: object
                       additionalProperties: false
-                      description: REST representation of pb.NodeStatusResp.
+                      description: REST representation of pb.NodeStatusResp for a
+                        DataNode.
                       properties:
                         worker_node_id:
                           type: string
@@ -2148,9 +2288,9 @@ paths:
                       required:
                       - worker_node_id
                       - health_status
-  /nodes/{node_id}/devices:
+  /datanodes/{datanode_id}/free-devices:
     parameters:
-    - name: node_id
+    - name: datanode_id
       in: path
       required: true
       schema:
@@ -2158,9 +2298,10 @@ paths:
     get:
       tags:
       - DataDevice
-      summary: List node devices
-      operationId: ListNodeDevices
-      description: List devices attached to one node. Response is aligned with pb.GetDevicesResponse.
+      summary: List free DataNode devices
+      operationId: ListFreeDataNodeDevices
+      description: List devices discovered on the DataNode host that are not managed
+        by the DataNode. Response is aligned with pb.GetDevicesResponse.
       responses:
         '200':
           description: Success
@@ -2306,17 +2447,183 @@ paths:
                       required:
                       - node_id
                       - devices
+  /datanodes/{datanode_id}/managed-devices:
+    parameters:
+    - name: datanode_id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - DataDevice
+      summary: List managed DataNode devices
+      operationId: ListManagedDataNodeDevices
+      description: List devices currently managed by the DataNode. Response is aligned
+        with pb.GetDevicesResponse.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      description: REST representation of pb.GetDevicesResponse.
+                      properties:
+                        node_id:
+                          type: string
+                        devices:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.DeviceInfo.
+                            properties:
+                              device_uuid:
+                                type: string
+                              qfs_prefix:
+                                type: integer
+                                format: int64
+                                x-go-type: uint64
+                                minimum: 0
+                              class:
+                                type: integer
+                                format: int32
+                                description: pb.DeviceClass enum value.
+                                enum:
+                                - 0
+                                - 1
+                                - 2
+                                - 3
+                              super_block:
+                                type: object
+                                additionalProperties: false
+                                description: REST representation of pb.SuperBlock.
+                                properties:
+                                  disk_label:
+                                    type: object
+                                    additionalProperties: false
+                                    description: REST representation of pb.DiskLabel.
+                                    properties:
+                                      fs_uuid:
+                                        type: string
+                                      device_uuid:
+                                        type: string
+                                      qfs_prefix:
+                                        type: integer
+                                        format: int64
+                                        x-go-type: uint64
+                                        minimum: 0
+                                      idx:
+                                        type: integer
+                                        format: int32
+                                        x-go-type: uint32
+                                        minimum: 0
+                                  version:
+                                    type: integer
+                                    format: int32
+                                    x-go-type: uint32
+                                    minimum: 0
+                                  magic_num:
+                                    type: integer
+                                    format: int64
+                                    x-go-type: uint64
+                                    minimum: 0
+                                  checksum:
+                                    type: integer
+                                    format: int32
+                                    x-go-type: uint32
+                                    minimum: 0
+                                  size:
+                                    type: integer
+                                    format: int64
+                                    x-go-type: uint64
+                                    minimum: 0
+                                  io_size:
+                                    type: integer
+                                    format: int32
+                                    x-go-type: uint32
+                                    minimum: 0
+                                  access:
+                                    type: integer
+                                    format: int32
+                                    x-go-type: uint32
+                                    minimum: 0
+                                  block_size:
+                                    type: integer
+                                    format: int32
+                                    x-go-type: uint32
+                                    minimum: 0
+                                  dir_len:
+                                    type: integer
+                                    format: int32
+                                    x-go-type: uint32
+                                    minimum: 0
+                                  epoch_head:
+                                    type: integer
+                                    format: int64
+                                    x-go-type: uint64
+                                    minimum: 0
+                                  generation:
+                                    type: integer
+                                    format: int64
+                                    x-go-type: uint64
+                                    minimum: 0
+                              cap:
+                                type: integer
+                                format: int64
+                                x-go-type: uint64
+                                minimum: 0
+                              phy_path:
+                                type: string
+                              devType:
+                                type: integer
+                                format: int32
+                                x-go-name: DevType
+                                description: pb.DeviceInfo.devType.
+                            required:
+                            - phy_path
+                            - devType
+                      required:
+                      - node_id
+                      - devices
+  /datanodes/{datanode_id}/devices:
+    parameters:
+    - name: datanode_id
+      in: path
+      required: true
+      schema:
+        type: string
     post:
       tags:
       - DataDevice
       summary: Add data device
-      description: Attach a data device to the selected node. Request is aligned with
-        pb.AddDataDeviceRequest.
+      description: Attach a data device to the selected DataNode. Request is aligned
+        with pb.AddDataDeviceRequest.
       operationId: AddDataDevice
       requestBody:
         required: true
-        description: Device path and initialization options. node_id is taken from
-          the path parameter.
+        description: Device path and initialization options. datanode_id is taken
+          from the path parameter.
         content:
           application/json:
             schema:
@@ -2383,9 +2690,9 @@ paths:
                       - device_uuid
                       - qfs_prefix
                       - node_id
-  /nodes/{node_id}/devices/{device_uuid}:
+  /datanodes/{datanode_id}/devices/{device_uuid}:
     parameters:
-    - name: node_id
+    - name: datanode_id
       in: path
       required: true
       schema:
@@ -2399,8 +2706,8 @@ paths:
       tags:
       - DataDevice
       summary: Delete data device
-      description: Detach a data device from the selected node. Node and device identities
-        are taken from path parameters.
+      description: Detach a data device from the selected DataNode. DataNode and device
+        identities are taken from path parameters.
       operationId: DeleteDataDevice
       requestBody:
         required: false
@@ -4453,11 +4760,11 @@ components:
       required:
       - service_id
       - instance_id
-    RegisterNodeRequest:
+    RegisterDataNodeRequest:
       type: object
       additionalProperties: false
-      description: Node registration input. The control plane generates node_id and
-        owns runtime/topology state.
+      description: DataNode registration input. The control plane generates node_id
+        and owns runtime/topology state.
       properties:
         addr:
           type: string
@@ -4467,13 +4774,10 @@ components:
           type: integer
           format: int32
           x-go-type: uint32
-          description: Non-zero bitmask composed from META=1, DATA=2 and CONTROL=4.
+          description: Role bitmask; this endpoint requires the DATA bit (DATA=2).
           enum:
-          - 1
           - 2
           - 3
-          - 4
-          - 5
           - 6
           - 7
         parent_node_id:
@@ -4509,7 +4813,7 @@ components:
       required:
       - addr
       - role
-    RegisterNodeData:
+    RegisterDataNodeData:
       type: object
       additionalProperties: false
       properties:
@@ -4520,11 +4824,11 @@ components:
       required:
       - node_id
       - endpoint
-    NodeListData:
+    DataNodeListData:
       type: object
       additionalProperties: false
       properties:
-        nodes:
+        datanodes:
           type: array
           items:
             type: object
@@ -4731,12 +5035,12 @@ components:
           type: integer
           minimum: 0
       required:
-      - nodes
+      - datanodes
       - count
-    NodeStatus:
+    DataNodeStatus:
       type: object
       additionalProperties: false
-      description: REST representation of pb.NodeStatusResp.
+      description: REST representation of pb.NodeStatusResp for a DataNode.
       properties:
         worker_node_id:
           type: string
@@ -4782,6 +5086,51 @@ components:
       required:
       - worker_node_id
       - health_status
+    DataNodeCandidate:
+      type: object
+      additionalProperties: false
+      description: Minimal Kubernetes node information exposed for DataNode placement.
+      properties:
+        name:
+          type: string
+        qubuifs_node:
+          type: boolean
+          description: Whether the Kubernetes node has qubuifs.io/data-node=true.
+        architecture:
+          type: string
+          description: CPU architecture reported by Kubernetes, for example amd64
+            or arm64.
+      required:
+      - name
+      - qubuifs_node
+      - architecture
+    DataNodeDeploymentRequest:
+      type: object
+      additionalProperties: false
+      description: DataNode Pod deployment target and published image version.
+      properties:
+        node:
+          type: string
+          minLength: 1
+          description: Name of the Kubernetes node that will host the DataNode Pod.
+        image_version:
+          type: string
+          minLength: 1
+          description: Published DataNode image tag, for example dev or v1.2.0.
+      required:
+      - node
+      - image_version
+    DataNodeDeletionRequest:
+      type: object
+      additionalProperties: false
+      description: Kubernetes node whose DataNode Pod should be deleted.
+      properties:
+        node:
+          type: string
+          minLength: 1
+          description: Name of the Kubernetes node hosting the DataNode Pod.
+      required:
+      - node
     QubuiFS:
       type: object
       additionalProperties: false
