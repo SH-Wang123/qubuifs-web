@@ -1,0 +1,194 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========== 主题 token：复用原型 HTML 的 CSS 变量 ========== */
+
+/* Light mode source tokens */
+:root {
+  /* Core surface colors */
+  --background: #ffffff;
+  --foreground: #0e1115;
+  --card: #ffffff;
+  --card-foreground: #0e1115;
+  --popover: #f9f9fa;
+  --popover-foreground: #0e1115;
+
+  /* Semantic action colors */
+  --primary: #4285f4;
+  --primary-foreground: #ffffff;
+  --secondary: #dbeafe;
+  --secondary-foreground: #333942;
+  --muted: #eff1f4;
+  --muted-foreground: #7f8d9f;
+  --accent: #dbeafe;
+  --accent-foreground: #003e8f;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  /* Borders, inputs, focus */
+  --border: #ebebeb;
+  --input: #e2e3e4;
+  --ring: #4285f4;
+
+  /* Data visualization */
+  --chart-1: #4285f4;
+  --chart-2: #ea4335;
+  --chart-3: #fbbc05;
+  --chart-4: #0043ad;
+  --chart-5: #34a853;
+
+  /* Sidebar */
+  --sidebar: #f0f6ff;
+  --sidebar-foreground: #0e1115;
+  --sidebar-primary: #4285f4;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dbeafe;
+  --sidebar-accent-foreground: #003e8f;
+  --sidebar-border: #e7eaef;
+  --sidebar-ring: #4285f4;
+
+  /* Typography */
+  --font-sans: DM Sans, ui-sans-serif, sans-serif, system-ui;
+  --font-mono: JetBrains Mono, ui-monospace, monospace;
+
+  /* Radius */
+  --radius: 0.5rem;
+
+  /* Status colors */
+  --status-ok: #34a853;
+  --status-warn: #fbbc05;
+  --status-err: #ea4335;
+  --status-unknown: #9aa0a6;
+}
+
+/* Dark mode source tokens */
+.dark {
+  --background: #161616;
+  --foreground: #eff1f4;
+  --card: #1d1d1c;
+  --card-foreground: #eff1f4;
+  --popover: #2e2e2e;
+  --popover-foreground: #e5e5e5;
+
+  --primary: #fc2c50;
+  --primary-foreground: #ffffff;
+  --secondary: #383838;
+  --secondary-foreground: #e5e5e5;
+  --muted: #383838;
+  --muted-foreground: #949494;
+  --accent: #4a2026;
+  --accent-foreground: #fc2c50;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --border: #1d1d1c;
+  --input: #000000;
+  --ring: #ffffff;
+
+  --chart-1: #2dccd3;
+  --chart-2: #f1204a;
+  --chart-3: #edbbe8;
+  --chart-4: #fbeb35;
+  --chart-5: #baf6f0;
+
+  --sidebar: #171717;
+  --sidebar-foreground: #e5e5e5;
+  --sidebar-primary: #0065fd;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #00266b;
+  --sidebar-accent-foreground: #bfdbfe;
+  --sidebar-border: #404040;
+  --sidebar-ring: #00266b;
+
+  --status-ok: #34a853;
+  --status-warn: #fbbc05;
+  --status-err: #ea4335;
+  --status-unknown: #9aa0a6;
+}
+
+/* ========== Base styles ========== */
+:root {
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    margin: 0;
+  }
+  td, th { word-break: break-word; }
+  th { white-space: nowrap; }
+  /* 自定义滚动条，与 Dashboard 风格一致 */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: 4px;
+    opacity: 0.4;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); opacity: 0.7; }
+}
+
+/* ========== 通用工具类 ========== */
+@layer components {
+  .card {
+    @apply rounded-lg border bg-card p-5;
+    border-color: var(--border);
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn text-white;
+    background: var(--primary);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--primary) 88%, black);
+  }
+  .btn-outline {
+    @apply btn border bg-transparent;
+    border-color: var(--border);
+    color: var(--foreground);
+  }
+  .btn-outline:hover:not(:disabled) {
+    background: var(--muted);
+  }
+  .btn-ghost {
+    @apply btn bg-transparent;
+    color: var(--foreground);
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--muted);
+  }
+  .btn-danger {
+    @apply btn text-white;
+    background: var(--destructive);
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--destructive) 88%, black);
+  }
+  .input {
+    @apply w-full px-3 py-1.5 text-sm rounded-md border bg-transparent outline-none transition;
+    border-color: var(--input);
+    color: var(--foreground);
+  }
+  .input:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 30%, transparent);
+  }
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+}

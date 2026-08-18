@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# IDE
+.trae/
+
+# 构建产物
+bin/
+web/.vite/
