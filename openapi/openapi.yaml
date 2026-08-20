@@ -363,6 +363,12 @@ paths:
                                 namespace:
                                   type: string
                                   description: pb.QubuiFS.namespace.
+                                name:
+                                  type: string
+                                  description: pb.QubuiFS.name.
+                                des:
+                                  type: string
+                                  description: pb.QubuiFS.des.
                                 mount_info:
                                   type: array
                                   description: pb.QubuiFS.mount_info.
@@ -417,6 +423,13 @@ paths:
                 namespace:
                   type: string
                   description: pb.QubuiFS.namespace.
+                name:
+                  type: string
+                  minLength: 1
+                  description: Display name for this QubuiFS.
+                des:
+                  type: string
+                  description: Optional description for this QubuiFS.
                 meta_service_id:
                   type: string
                   minLength: 1
@@ -428,6 +441,7 @@ paths:
                     type: string
               required:
               - namespace
+              - name
               - meta_service_id
       responses:
         '200':
@@ -533,6 +547,12 @@ paths:
                         namespace:
                           type: string
                           description: pb.QubuiFS.namespace.
+                        name:
+                          type: string
+                          description: pb.QubuiFS.name.
+                        des:
+                          type: string
+                          description: pb.QubuiFS.des.
                         mount_info:
                           type: array
                           description: pb.QubuiFS.mount_info.
@@ -809,6 +829,12 @@ paths:
                         namespace:
                           type: string
                           description: pb.QubuiFS.namespace.
+                        name:
+                          type: string
+                          description: pb.QubuiFS.name.
+                        des:
+                          type: string
+                          description: pb.QubuiFS.des.
                         mount_info:
                           type: array
                           description: pb.QubuiFS.mount_info.
@@ -916,6 +942,12 @@ paths:
                         namespace:
                           type: string
                           description: pb.QubuiFS.namespace.
+                        name:
+                          type: string
+                          description: pb.QubuiFS.name.
+                        des:
+                          type: string
+                          description: pb.QubuiFS.des.
                         mount_info:
                           type: array
                           description: pb.QubuiFS.mount_info.
@@ -1031,6 +1063,12 @@ paths:
                         namespace:
                           type: string
                           description: pb.QubuiFS.namespace.
+                        name:
+                          type: string
+                          description: pb.QubuiFS.name.
+                        des:
+                          type: string
+                          description: pb.QubuiFS.des.
                         mount_info:
                           type: array
                           description: pb.QubuiFS.mount_info.
@@ -1138,6 +1176,12 @@ paths:
                         namespace:
                           type: string
                           description: pb.QubuiFS.namespace.
+                        name:
+                          type: string
+                          description: pb.QubuiFS.name.
+                        des:
+                          type: string
+                          description: pb.QubuiFS.des.
                         mount_info:
                           type: array
                           description: pb.QubuiFS.mount_info.
@@ -1258,6 +1302,12 @@ paths:
                         namespace:
                           type: string
                           description: pb.QubuiFS.namespace.
+                        name:
+                          type: string
+                          description: pb.QubuiFS.name.
+                        des:
+                          type: string
+                          description: pb.QubuiFS.des.
                         mount_info:
                           type: array
                           description: pb.QubuiFS.mount_info.
@@ -1370,6 +1420,12 @@ paths:
                         namespace:
                           type: string
                           description: pb.QubuiFS.namespace.
+                        name:
+                          type: string
+                          description: pb.QubuiFS.name.
+                        des:
+                          type: string
+                          description: pb.QubuiFS.des.
                         mount_info:
                           type: array
                           description: pb.QubuiFS.mount_info.
@@ -4945,6 +5001,12 @@ components:
         namespace:
           type: string
           description: pb.QubuiFS.namespace.
+        name:
+          type: string
+          description: pb.QubuiFS.name.
+        des:
+          type: string
+          description: pb.QubuiFS.des.
         mount_info:
           type: array
           description: pb.QubuiFS.mount_info.
@@ -5048,6 +5110,12 @@ components:
                 namespace:
                   type: string
                   description: pb.QubuiFS.namespace.
+                name:
+                  type: string
+                  description: pb.QubuiFS.name.
+                des:
+                  type: string
+                  description: pb.QubuiFS.des.
                 mount_info:
                   type: array
                   description: pb.QubuiFS.mount_info.
@@ -5098,6 +5166,13 @@ components:
         namespace:
           type: string
           description: pb.QubuiFS.namespace.
+        name:
+          type: string
+          minLength: 1
+          description: Display name for this QubuiFS.
+        des:
+          type: string
+          description: Optional description for this QubuiFS.
         meta_service_id:
           type: string
           minLength: 1
@@ -5109,6 +5184,7 @@ components:
             type: string
       required:
       - namespace
+      - name
       - meta_service_id
     QubuiFSDiskRequest:
       type: object
