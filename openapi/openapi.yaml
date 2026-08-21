@@ -385,9 +385,11 @@ paths:
                                     - path
                                     - node_id
                                 meta_service_id:
-                                  type: string
-                                  description: Metadata service associated with this
+                                  type: array
+                                  description: Metadata services associated with this
                                     QubuiFS.
+                                  items:
+                                    type: string
                                 data_node_id:
                                   type: array
                                   description: pb.QubuiFS.data_node_id.
@@ -431,9 +433,12 @@ paths:
                   type: string
                   description: Optional description for this QubuiFS.
                 meta_service_id:
-                  type: string
-                  minLength: 1
-                  description: Existing metadata service used by this QubuiFS.
+                  type: array
+                  minItems: 1
+                  description: Existing metadata services used by this QubuiFS.
+                  items:
+                    type: string
+                    minLength: 1
                 data_node_id:
                   type: array
                   description: Optional pb.QubuiFS.data_node_id values.
@@ -569,8 +574,10 @@ paths:
                             - path
                             - node_id
                         meta_service_id:
-                          type: string
-                          description: Metadata service associated with this QubuiFS.
+                          type: array
+                          description: Metadata services associated with this QubuiFS.
+                          items:
+                            type: string
                         data_node_id:
                           type: array
                           description: pb.QubuiFS.data_node_id.
@@ -851,8 +858,10 @@ paths:
                             - path
                             - node_id
                         meta_service_id:
-                          type: string
-                          description: Metadata service associated with this QubuiFS.
+                          type: array
+                          description: Metadata services associated with this QubuiFS.
+                          items:
+                            type: string
                         data_node_id:
                           type: array
                           description: pb.QubuiFS.data_node_id.
@@ -964,8 +973,10 @@ paths:
                             - path
                             - node_id
                         meta_service_id:
-                          type: string
-                          description: Metadata service associated with this QubuiFS.
+                          type: array
+                          description: Metadata services associated with this QubuiFS.
+                          items:
+                            type: string
                         data_node_id:
                           type: array
                           description: pb.QubuiFS.data_node_id.
@@ -1085,8 +1096,10 @@ paths:
                             - path
                             - node_id
                         meta_service_id:
-                          type: string
-                          description: Metadata service associated with this QubuiFS.
+                          type: array
+                          description: Metadata services associated with this QubuiFS.
+                          items:
+                            type: string
                         data_node_id:
                           type: array
                           description: pb.QubuiFS.data_node_id.
@@ -1198,252 +1211,10 @@ paths:
                             - path
                             - node_id
                         meta_service_id:
-                          type: string
-                          description: Metadata service associated with this QubuiFS.
-                        data_node_id:
                           type: array
-                          description: pb.QubuiFS.data_node_id.
+                          description: Metadata services associated with this QubuiFS.
                           items:
                             type: string
-                      required:
-                      - fs_uuid
-                      - namespace
-  /qubuifs/{fs_uuid}/disks:
-    parameters:
-    - name: fs_uuid
-      in: path
-      required: true
-      schema:
-        type: string
-        minLength: 1
-    post:
-      tags:
-      - QubuiFS
-      summary: Add disk to QubuiFS
-      operationId: AddQubuiFSDisk
-      description: Add a disk label to the filesystem metadata without validating
-        the device inventory.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: false
-              properties:
-                device_uuid:
-                  type: string
-                  minLength: 1
-                qfs_prefix:
-                  type: integer
-                  format: int64
-                  x-go-type: uint64
-                  minimum: 1
-              required:
-              - device_uuid
-              - qfs_prefix
-      responses:
-        '200':
-          description: Disk added
-          content:
-            application/json:
-              schema:
-                allOf:
-                - type: object
-                  additionalProperties: false
-                  properties:
-                    code:
-                      type: integer
-                      description: Application status code. Zero means success.
-                    message:
-                      type: string
-                    data:
-                      nullable: true
-                      description: Operation-specific response payload.
-                  required:
-                  - code
-                  - message
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      additionalProperties: false
-                      description: REST representation of pb.QubuiFS.
-                      properties:
-                        fs_uuid:
-                          type: string
-                          description: pb.QubuiFS.fs_uuid.
-                        fs_id:
-                          type: integer
-                          format: int64
-                          description: pb.QubuiFS.fs_id.
-                        disk_labels:
-                          type: array
-                          description: pb.QubuiFS.disk_labels.
-                          items:
-                            type: object
-                            additionalProperties: false
-                            description: REST representation of pb.DiskLabel.
-                            properties:
-                              fs_uuid:
-                                type: string
-                              device_uuid:
-                                type: string
-                              qfs_prefix:
-                                type: integer
-                                format: int64
-                                x-go-type: uint64
-                                minimum: 0
-                              idx:
-                                type: integer
-                                format: int32
-                                x-go-type: uint32
-                                minimum: 0
-                        namespace:
-                          type: string
-                          description: pb.QubuiFS.namespace.
-                        name:
-                          type: string
-                          description: pb.QubuiFS.name.
-                        des:
-                          type: string
-                          description: pb.QubuiFS.des.
-                        mount_info:
-                          type: array
-                          description: pb.QubuiFS.mount_info.
-                          items:
-                            type: object
-                            additionalProperties: false
-                            description: REST representation of pb.MountInfo.
-                            properties:
-                              path:
-                                type: string
-                              node_id:
-                                type: string
-                            required:
-                            - path
-                            - node_id
-                        meta_service_id:
-                          type: string
-                          description: Metadata service associated with this QubuiFS.
-                        data_node_id:
-                          type: array
-                          description: pb.QubuiFS.data_node_id.
-                          items:
-                            type: string
-                      required:
-                      - fs_uuid
-                      - namespace
-    delete:
-      tags:
-      - QubuiFS
-      summary: Delete disk from QubuiFS
-      operationId: DeleteQubuiFSDisk
-      description: Delete a disk label from the filesystem metadata without validating
-        the device inventory.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: false
-              properties:
-                device_uuid:
-                  type: string
-                  minLength: 1
-                qfs_prefix:
-                  type: integer
-                  format: int64
-                  x-go-type: uint64
-                  minimum: 1
-              required:
-              - device_uuid
-              - qfs_prefix
-      responses:
-        '200':
-          description: Disk deleted
-          content:
-            application/json:
-              schema:
-                allOf:
-                - type: object
-                  additionalProperties: false
-                  properties:
-                    code:
-                      type: integer
-                      description: Application status code. Zero means success.
-                    message:
-                      type: string
-                    data:
-                      nullable: true
-                      description: Operation-specific response payload.
-                  required:
-                  - code
-                  - message
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      additionalProperties: false
-                      description: REST representation of pb.QubuiFS.
-                      properties:
-                        fs_uuid:
-                          type: string
-                          description: pb.QubuiFS.fs_uuid.
-                        fs_id:
-                          type: integer
-                          format: int64
-                          description: pb.QubuiFS.fs_id.
-                        disk_labels:
-                          type: array
-                          description: pb.QubuiFS.disk_labels.
-                          items:
-                            type: object
-                            additionalProperties: false
-                            description: REST representation of pb.DiskLabel.
-                            properties:
-                              fs_uuid:
-                                type: string
-                              device_uuid:
-                                type: string
-                              qfs_prefix:
-                                type: integer
-                                format: int64
-                                x-go-type: uint64
-                                minimum: 0
-                              idx:
-                                type: integer
-                                format: int32
-                                x-go-type: uint32
-                                minimum: 0
-                        namespace:
-                          type: string
-                          description: pb.QubuiFS.namespace.
-                        name:
-                          type: string
-                          description: pb.QubuiFS.name.
-                        des:
-                          type: string
-                          description: pb.QubuiFS.des.
-                        mount_info:
-                          type: array
-                          description: pb.QubuiFS.mount_info.
-                          items:
-                            type: object
-                            additionalProperties: false
-                            description: REST representation of pb.MountInfo.
-                            properties:
-                              path:
-                                type: string
-                              node_id:
-                                type: string
-                            required:
-                            - path
-                            - node_id
-                        meta_service_id:
-                          type: string
-                          description: Metadata service associated with this QubuiFS.
                         data_node_id:
                           type: array
                           description: pb.QubuiFS.data_node_id.
@@ -5023,8 +4794,10 @@ components:
             - path
             - node_id
         meta_service_id:
-          type: string
-          description: Metadata service associated with this QubuiFS.
+          type: array
+          description: Metadata services associated with this QubuiFS.
+          items:
+            type: string
         data_node_id:
           type: array
           description: pb.QubuiFS.data_node_id.
@@ -5132,8 +4905,10 @@ components:
                     - path
                     - node_id
                 meta_service_id:
-                  type: string
-                  description: Metadata service associated with this QubuiFS.
+                  type: array
+                  description: Metadata services associated with this QubuiFS.
+                  items:
+                    type: string
                 data_node_id:
                   type: array
                   description: pb.QubuiFS.data_node_id.
@@ -5174,9 +4949,12 @@ components:
           type: string
           description: Optional description for this QubuiFS.
         meta_service_id:
-          type: string
-          minLength: 1
-          description: Existing metadata service used by this QubuiFS.
+          type: array
+          minItems: 1
+          description: Existing metadata services used by this QubuiFS.
+          items:
+            type: string
+            minLength: 1
         data_node_id:
           type: array
           description: Optional pb.QubuiFS.data_node_id values.
@@ -5186,21 +4964,6 @@ components:
       - namespace
       - name
       - meta_service_id
-    QubuiFSDiskRequest:
-      type: object
-      additionalProperties: false
-      properties:
-        device_uuid:
-          type: string
-          minLength: 1
-        qfs_prefix:
-          type: integer
-          format: int64
-          x-go-type: uint64
-          minimum: 1
-      required:
-      - device_uuid
-      - qfs_prefix
     QubuiFSNodeRequest:
       type: object
       additionalProperties: false
