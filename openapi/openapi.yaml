@@ -1290,6 +1290,248 @@ paths:
                       required:
                       - fs_uuid
                       - namespace
+  /qubuifs/{fs_uuid}/mount-info:
+    parameters:
+    - name: fs_uuid
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    post:
+      tags:
+      - QubuiFS
+      summary: Add mount info to QubuiFS
+      operationId: AddQubuiFSMountInfo
+      description: Add one mount record to a QubuiFS. The ControlAdminService implementation
+        is a placeholder.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              description: REST representation of pb.MountInfo.
+              properties:
+                path:
+                  type: string
+                node_id:
+                  type: string
+              required:
+              - path
+              - node_id
+      responses:
+        '200':
+          description: Mount info added
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      description: REST representation of pb.QubuiFS.
+                      properties:
+                        fs_uuid:
+                          type: string
+                          description: pb.QubuiFS.fs_uuid.
+                        fs_id:
+                          type: integer
+                          format: int64
+                          description: pb.QubuiFS.fs_id.
+                        disk_labels:
+                          type: array
+                          description: pb.QubuiFS.disk_labels.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.DiskLabel.
+                            properties:
+                              fs_uuid:
+                                type: string
+                              device_uuid:
+                                type: string
+                              qfs_prefix:
+                                type: integer
+                                format: int64
+                                x-go-type: uint64
+                                minimum: 0
+                              idx:
+                                type: integer
+                                format: int32
+                                x-go-type: uint32
+                                minimum: 0
+                        namespace:
+                          type: string
+                          description: pb.QubuiFS.namespace.
+                        name:
+                          type: string
+                          description: pb.QubuiFS.name.
+                        des:
+                          type: string
+                          description: pb.QubuiFS.des.
+                        mount_info:
+                          type: array
+                          description: pb.QubuiFS.mount_info.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.MountInfo.
+                            properties:
+                              path:
+                                type: string
+                              node_id:
+                                type: string
+                            required:
+                            - path
+                            - node_id
+                        meta_service_id:
+                          type: array
+                          description: Metadata services associated with this QubuiFS.
+                          items:
+                            type: string
+                        data_node_id:
+                          type: array
+                          description: pb.QubuiFS.data_node_id.
+                          items:
+                            type: string
+                      required:
+                      - fs_uuid
+                      - namespace
+    delete:
+      tags:
+      - QubuiFS
+      summary: Delete mount info from QubuiFS
+      operationId: DeleteQubuiFSMountInfo
+      description: Delete one mount record from a QubuiFS. The ControlAdminService
+        implementation is a placeholder.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              description: REST representation of pb.MountInfo.
+              properties:
+                path:
+                  type: string
+                node_id:
+                  type: string
+              required:
+              - path
+              - node_id
+      responses:
+        '200':
+          description: Mount info deleted
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      description: REST representation of pb.QubuiFS.
+                      properties:
+                        fs_uuid:
+                          type: string
+                          description: pb.QubuiFS.fs_uuid.
+                        fs_id:
+                          type: integer
+                          format: int64
+                          description: pb.QubuiFS.fs_id.
+                        disk_labels:
+                          type: array
+                          description: pb.QubuiFS.disk_labels.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.DiskLabel.
+                            properties:
+                              fs_uuid:
+                                type: string
+                              device_uuid:
+                                type: string
+                              qfs_prefix:
+                                type: integer
+                                format: int64
+                                x-go-type: uint64
+                                minimum: 0
+                              idx:
+                                type: integer
+                                format: int32
+                                x-go-type: uint32
+                                minimum: 0
+                        namespace:
+                          type: string
+                          description: pb.QubuiFS.namespace.
+                        name:
+                          type: string
+                          description: pb.QubuiFS.name.
+                        des:
+                          type: string
+                          description: pb.QubuiFS.des.
+                        mount_info:
+                          type: array
+                          description: pb.QubuiFS.mount_info.
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: REST representation of pb.MountInfo.
+                            properties:
+                              path:
+                                type: string
+                              node_id:
+                                type: string
+                            required:
+                            - path
+                            - node_id
+                        meta_service_id:
+                          type: array
+                          description: Metadata services associated with this QubuiFS.
+                          items:
+                            type: string
+                        data_node_id:
+                          type: array
+                          description: pb.QubuiFS.data_node_id.
+                          items:
+                            type: string
+                      required:
+                      - fs_uuid
+                      - namespace
   /datanodes:
     get:
       tags:
