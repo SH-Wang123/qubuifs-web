@@ -612,6 +612,73 @@ paths:
                 required:
                 - code
                 - message
+  /qubuifs/{fs_uuid}/test:
+    parameters:
+    - name: fs_uuid
+      in: path
+      required: true
+      description: Filesystem identifier to test.
+      schema:
+        type: string
+        minLength: 1
+    get:
+      summary: Test QubuiFS
+      operationId: TestQubuiFS
+      description: Run the management-plane test hook for one QubuiFS. The concrete
+        ControlAdminService test is currently a placeholder.
+      tags:
+      - QubuiFS
+      responses:
+        '200':
+          description: Test result.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: true
+                      description: Reserved result payload for the QubuiFS test hook.
+                      properties:
+                        fs_uuid:
+                          type: string
+                        status:
+                          type: string
+        '501':
+          description: Test hook is not implemented yet.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: integer
+                    description: Application status code. Zero means success.
+                  message:
+                    type: string
+                  data:
+                    nullable: true
+                    description: Operation-specific response payload.
+                required:
+                - code
+                - message
   /qubuifs/{fs_uuid}/topology/register:
     parameters:
     - name: fs_uuid
