@@ -2483,6 +2483,101 @@ paths:
                           type: string
                       required:
                       - dest
+  /metadata/etcd:
+    get:
+      summary: Query decoded QubuiFS etcd protobuf records
+      description: Query control-plane etcd records by type. Supported values are
+        metaService, datanode, and fs. The fs query returns QubuiFS filesystem metadata
+        only and never scans inode, dentry, or other metanode-owned data.
+      operationId: QueryEtcd
+      tags:
+      - Metadata
+      parameters:
+      - name: type
+        in: query
+        required: true
+        description: Protobuf record category to query.
+        schema:
+          type: string
+          enum:
+          - metaService
+          - datanode
+          - fs
+      responses:
+        '200':
+          description: Decoded protobuf records.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    code:
+                      type: integer
+                      description: Application status code. Zero means success.
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                      description: Operation-specific response payload.
+                  required:
+                  - code
+                  - message
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                          - metaService
+                          - datanode
+                          - fs
+                        records:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            description: One etcd key and its decoded protobuf message
+                              represented as REST JSON.
+                            properties:
+                              key:
+                                type: string
+                              data:
+                                type: object
+                                additionalProperties: true
+                            required:
+                            - key
+                            - data
+                        count:
+                          type: integer
+                          minimum: 0
+                      required:
+                      - type
+                      - records
+                      - count
+        '400':
+          description: Invalid or unsupported query type.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: integer
+                    description: Application status code. Zero means success.
+                  message:
+                    type: string
+                  data:
+                    nullable: true
+                    description: Operation-specific response payload.
+                required:
+                - code
+                - message
   /namespaces:
     get:
       summary: List namespaces
@@ -4135,6 +4230,39 @@ components:
           type: string
       required:
       - dest
+    EtcdQueryData:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum:
+          - metaService
+          - datanode
+          - fs
+        records:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            description: One etcd key and its decoded protobuf message represented
+              as REST JSON.
+            properties:
+              key:
+                type: string
+              data:
+                type: object
+                additionalProperties: true
+            required:
+            - key
+            - data
+        count:
+          type: integer
+          minimum: 0
+      required:
+      - type
+      - records
+      - count
     NamespaceCreateRequest:
       type: object
       additionalProperties: false
