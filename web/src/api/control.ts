@@ -304,18 +304,6 @@ export const deleteNamespace = (name: string) =>
 
 /* ===== QubuiFS 子资源（meta/data node、磁盘） ===== */
 
-export const addQubuiFSMetaNode = (fsUuid: string, body: QubuiFSNodeRequest) =>
-  controlRequest<QubuiFS>(`/qubuifs/${encodeURIComponent(fsUuid)}/meta-nodes`, {
-    method: 'POST',
-    body: JSON.stringify(body),
-  });
-
-export const deleteQubuiFSMetaNode = (fsUuid: string, body: QubuiFSNodeRequest) =>
-  controlRequest<QubuiFS>(`/qubuifs/${encodeURIComponent(fsUuid)}/meta-nodes`, {
-    method: 'DELETE',
-    body: JSON.stringify(body),
-  });
-
 export const addQubuiFSDataNode = (fsUuid: string, body: QubuiFSNodeRequest) =>
   controlRequest<QubuiFS>(`/qubuifs/${encodeURIComponent(fsUuid)}/data-nodes`, {
     method: 'POST',

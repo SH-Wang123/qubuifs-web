@@ -278,13 +278,13 @@ func (g *Gateway) serveMock(w http.ResponseWriter, r *http.Request, path string)
 				"message": "accepted",
 			})
 		default:
-			// /qubuifs/{fs_uuid}/{meta-nodes|data-nodes|disks}
+			// /qubuifs/{fs_uuid}/{data-nodes|disks}
 			if rest, ok := strings.CutPrefix(path, "/qubuifs/"); ok {
 				segs := strings.Split(rest, "/")
 				if len(segs) == 2 {
 					fsUUID := segs[0]
 					sub := segs[1]
-					if sub == "meta-nodes" || sub == "data-nodes" {
+					if sub == "data-nodes" {
 						fs, ok := mockFsByUUID[fsUUID]
 						if !ok {
 							mockNotFound(w, "qubuifs not found: "+fsUUID)
@@ -297,10 +297,7 @@ func (g *Gateway) serveMock(w http.ResponseWriter, r *http.Request, path string)
 							mockFail(w, "node_id is required")
 							return
 						}
-						field := "meta_node_id"
-						if sub == "data-nodes" {
-							field = "data_node_id"
-						}
+						field := "data_node_id"
 						existing := toStringSlice(fs[field])
 						dup := false
 						for _, n := range existing {
@@ -455,7 +452,7 @@ func (g *Gateway) serveMock(w http.ResponseWriter, r *http.Request, path string)
 		mockNotImplemented(w, "PUT "+path)
 	case http.MethodDelete:
 		switch {
-		case strings.HasPrefix(path, "/qubuifs/") && (strings.HasSuffix(path, "/meta-nodes") || strings.HasSuffix(path, "/data-nodes")):
+		case strings.HasPrefix(path, "/qubuifs/") && strings.HasSuffix(path, "/data-nodes"):
 			rest, _ := strings.CutPrefix(path, "/qubuifs/")
 			segs := strings.Split(rest, "/")
 			fsUUID := segs[0]
@@ -471,10 +468,7 @@ func (g *Gateway) serveMock(w http.ResponseWriter, r *http.Request, path string)
 				mockFail(w, "node_id is required")
 				return
 			}
-			field := "meta_node_id"
-			if strings.HasSuffix(path, "/data-nodes") {
-				field = "data_node_id"
-			}
+			field := "data_node_id"
 			existing := toStringSlice(fs[field])
 			out := []string{}
 			for _, n := range existing {
