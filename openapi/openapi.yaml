@@ -376,12 +376,20 @@ paths:
                                     type: object
                                     additionalProperties: false
                                     description: REST representation of pb.MountInfo.
+                                      namespace identifies the QubuiFS namespace for
+                                      this operation.
                                     properties:
+                                      namespace:
+                                        type: string
+                                        minLength: 1
+                                        description: QubuiFS namespace. This field
+                                          is required for mount-info operations.
                                       path:
                                         type: string
                                       node_id:
                                         type: string
                                     required:
+                                    - namespace
                                     - path
                                     - node_id
                                 meta_service_id:
@@ -564,13 +572,20 @@ paths:
                           items:
                             type: object
                             additionalProperties: false
-                            description: REST representation of pb.MountInfo.
+                            description: REST representation of pb.MountInfo. namespace
+                              identifies the QubuiFS namespace for this operation.
                             properties:
+                              namespace:
+                                type: string
+                                minLength: 1
+                                description: QubuiFS namespace. This field is required
+                                  for mount-info operations.
                               path:
                                 type: string
                               node_id:
                                 type: string
                             required:
+                            - namespace
                             - path
                             - node_id
                         meta_service_id:
@@ -828,7 +843,7 @@ paths:
       summary: Add data node to QubuiFS
       operationId: AddQubuiFSDataNode
       description: Add an existing etcd-registered node ID to the filesystem data
-        node list.
+        node list. namespace in the request body is required.
       requestBody:
         required: true
         content:
@@ -836,12 +851,19 @@ paths:
             schema:
               type: object
               additionalProperties: false
+              description: Data node membership operation scoped to a QubuiFS namespace.
               properties:
+                namespace:
+                  type: string
+                  minLength: 1
+                  description: QubuiFS namespace. This field is required for data-node
+                    operations.
                 node_id:
                   type: string
                   minLength: 1
                   description: Node ID that must already exist in etcd.
               required:
+              - namespace
               - node_id
       responses:
         '200':
@@ -915,13 +937,20 @@ paths:
                           items:
                             type: object
                             additionalProperties: false
-                            description: REST representation of pb.MountInfo.
+                            description: REST representation of pb.MountInfo. namespace
+                              identifies the QubuiFS namespace for this operation.
                             properties:
+                              namespace:
+                                type: string
+                                minLength: 1
+                                description: QubuiFS namespace. This field is required
+                                  for mount-info operations.
                               path:
                                 type: string
                               node_id:
                                 type: string
                             required:
+                            - namespace
                             - path
                             - node_id
                         meta_service_id:
@@ -943,7 +972,7 @@ paths:
       summary: Delete data node from QubuiFS
       operationId: DeleteQubuiFSDataNode
       description: Delete an etcd-registered node ID from the filesystem data node
-        list.
+        list. namespace in the request body is required.
       requestBody:
         required: true
         content:
@@ -951,12 +980,19 @@ paths:
             schema:
               type: object
               additionalProperties: false
+              description: Data node membership operation scoped to a QubuiFS namespace.
               properties:
+                namespace:
+                  type: string
+                  minLength: 1
+                  description: QubuiFS namespace. This field is required for data-node
+                    operations.
                 node_id:
                   type: string
                   minLength: 1
                   description: Node ID that must already exist in etcd.
               required:
+              - namespace
               - node_id
       responses:
         '200':
@@ -1030,13 +1066,20 @@ paths:
                           items:
                             type: object
                             additionalProperties: false
-                            description: REST representation of pb.MountInfo.
+                            description: REST representation of pb.MountInfo. namespace
+                              identifies the QubuiFS namespace for this operation.
                             properties:
+                              namespace:
+                                type: string
+                                minLength: 1
+                                description: QubuiFS namespace. This field is required
+                                  for mount-info operations.
                               path:
                                 type: string
                               node_id:
                                 type: string
                             required:
+                            - namespace
                             - path
                             - node_id
                         meta_service_id:
@@ -1065,8 +1108,8 @@ paths:
       - QubuiFS
       summary: Add mount info to QubuiFS
       operationId: AddQubuiFSMountInfo
-      description: Add one mount record to a QubuiFS. The ControlAdminService implementation
-        is a placeholder.
+      description: Add one mount record to a QubuiFS. namespace in the request body
+        is required. The ControlAdminService implementation is a placeholder.
       requestBody:
         required: true
         content:
@@ -1074,13 +1117,20 @@ paths:
             schema:
               type: object
               additionalProperties: false
-              description: REST representation of pb.MountInfo.
+              description: REST representation of pb.MountInfo. namespace identifies
+                the QubuiFS namespace for this operation.
               properties:
+                namespace:
+                  type: string
+                  minLength: 1
+                  description: QubuiFS namespace. This field is required for mount-info
+                    operations.
                 path:
                   type: string
                 node_id:
                   type: string
               required:
+              - namespace
               - path
               - node_id
       responses:
@@ -1155,13 +1205,20 @@ paths:
                           items:
                             type: object
                             additionalProperties: false
-                            description: REST representation of pb.MountInfo.
+                            description: REST representation of pb.MountInfo. namespace
+                              identifies the QubuiFS namespace for this operation.
                             properties:
+                              namespace:
+                                type: string
+                                minLength: 1
+                                description: QubuiFS namespace. This field is required
+                                  for mount-info operations.
                               path:
                                 type: string
                               node_id:
                                 type: string
                             required:
+                            - namespace
                             - path
                             - node_id
                         meta_service_id:
@@ -1182,8 +1239,8 @@ paths:
       - QubuiFS
       summary: Delete mount info from QubuiFS
       operationId: DeleteQubuiFSMountInfo
-      description: Delete one mount record from a QubuiFS. The ControlAdminService
-        implementation is a placeholder.
+      description: Delete one mount record from a QubuiFS. namespace in the request
+        body is required. The ControlAdminService implementation is a placeholder.
       requestBody:
         required: true
         content:
@@ -1191,13 +1248,20 @@ paths:
             schema:
               type: object
               additionalProperties: false
-              description: REST representation of pb.MountInfo.
+              description: REST representation of pb.MountInfo. namespace identifies
+                the QubuiFS namespace for this operation.
               properties:
+                namespace:
+                  type: string
+                  minLength: 1
+                  description: QubuiFS namespace. This field is required for mount-info
+                    operations.
                 path:
                   type: string
                 node_id:
                   type: string
               required:
+              - namespace
               - path
               - node_id
       responses:
@@ -1272,13 +1336,20 @@ paths:
                           items:
                             type: object
                             additionalProperties: false
-                            description: REST representation of pb.MountInfo.
+                            description: REST representation of pb.MountInfo. namespace
+                              identifies the QubuiFS namespace for this operation.
                             properties:
+                              namespace:
+                                type: string
+                                minLength: 1
+                                description: QubuiFS namespace. This field is required
+                                  for mount-info operations.
                               path:
                                 type: string
                               node_id:
                                 type: string
                             required:
+                            - namespace
                             - path
                             - node_id
                         meta_service_id:
@@ -2979,8 +3050,8 @@ paths:
     post:
       summary: Create metadata service
       operationId: CreateMetaService
-      description: Create a logical metadata service. The control plane generates
-        service_id.
+      description: Create a logical metadata service. namespace is required in the
+        request body and the control plane generates service_id.
       tags:
       - MetaService
       requestBody:
@@ -2992,7 +3063,7 @@ paths:
               type: object
               additionalProperties: false
               description: Logical metadata service input aligned with pb.MetaService.
-                service_id is generated by the control plane.
+                namespace is required and service_id is generated by the control plane.
               properties:
                 fs_uuid_list:
                   type: array
@@ -4406,8 +4477,8 @@ components:
     MetaServiceCreateRequest:
       type: object
       additionalProperties: false
-      description: Logical metadata service input aligned with pb.MetaService. service_id
-        is generated by the control plane.
+      description: Logical metadata service input aligned with pb.MetaService. namespace
+        is required and service_id is generated by the control plane.
       properties:
         fs_uuid_list:
           type: array
@@ -4983,13 +5054,20 @@ components:
           items:
             type: object
             additionalProperties: false
-            description: REST representation of pb.MountInfo.
+            description: REST representation of pb.MountInfo. namespace identifies
+              the QubuiFS namespace for this operation.
             properties:
+              namespace:
+                type: string
+                minLength: 1
+                description: QubuiFS namespace. This field is required for mount-info
+                  operations.
               path:
                 type: string
               node_id:
                 type: string
             required:
+            - namespace
             - path
             - node_id
         meta_service_id:
@@ -5008,13 +5086,19 @@ components:
     MountInfo:
       type: object
       additionalProperties: false
-      description: REST representation of pb.MountInfo.
+      description: REST representation of pb.MountInfo. namespace identifies the QubuiFS
+        namespace for this operation.
       properties:
+        namespace:
+          type: string
+          minLength: 1
+          description: QubuiFS namespace. This field is required for mount-info operations.
         path:
           type: string
         node_id:
           type: string
       required:
+      - namespace
       - path
       - node_id
     DiskLabel:
@@ -5094,13 +5178,20 @@ components:
                   items:
                     type: object
                     additionalProperties: false
-                    description: REST representation of pb.MountInfo.
+                    description: REST representation of pb.MountInfo. namespace identifies
+                      the QubuiFS namespace for this operation.
                     properties:
+                      namespace:
+                        type: string
+                        minLength: 1
+                        description: QubuiFS namespace. This field is required for
+                          mount-info operations.
                       path:
                         type: string
                       node_id:
                         type: string
                     required:
+                    - namespace
                     - path
                     - node_id
                 meta_service_id:
@@ -5166,12 +5257,18 @@ components:
     QubuiFSNodeRequest:
       type: object
       additionalProperties: false
+      description: Data node membership operation scoped to a QubuiFS namespace.
       properties:
+        namespace:
+          type: string
+          minLength: 1
+          description: QubuiFS namespace. This field is required for data-node operations.
         node_id:
           type: string
           minLength: 1
           description: Node ID that must already exist in etcd.
       required:
+      - namespace
       - node_id
     QubuiFSTopologyNodeRequest:
       type: object
