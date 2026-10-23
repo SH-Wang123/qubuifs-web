@@ -360,9 +360,9 @@ paths:
                                         format: int32
                                         x-go-type: uint32
                                         minimum: 0
-                                namespace:
+                                qubuifsNamespace:
                                   type: string
-                                  description: pb.QubuiFS.namespace.
+                                  description: pb.QubuiFS.qubuifsNamespace.
                                 name:
                                   type: string
                                   description: pb.QubuiFS.name.
@@ -376,10 +376,10 @@ paths:
                                     type: object
                                     additionalProperties: false
                                     description: REST representation of pb.MountInfo.
-                                      namespace identifies the QubuiFS namespace for
-                                      this operation.
+                                      qubuifsNamespace identifies the QubuiFS namespace
+                                      for this operation.
                                     properties:
-                                      namespace:
+                                      qubuifsNamespace:
                                         type: string
                                         minLength: 1
                                         description: QubuiFS namespace. This field
@@ -389,7 +389,7 @@ paths:
                                       node_id:
                                         type: string
                                     required:
-                                    - namespace
+                                    - qubuifsNamespace
                                     - path
                                     - node_id
                                 meta_service_id:
@@ -405,7 +405,7 @@ paths:
                                     type: string
                               required:
                               - fs_uuid
-                              - namespace
+                              - qubuifsNamespace
                         count:
                           type: integer
                           description: Total number of filesystems across all namespaces.
@@ -430,9 +430,9 @@ paths:
               description: Create request for QubuiFS. The REST layer builds pb.QubuiFS
                 from these required fields.
               properties:
-                namespace:
+                qubuifsNamespace:
                   type: string
-                  description: pb.QubuiFS.namespace.
+                  description: pb.QubuiFS.qubuifsNamespace.
                 name:
                   type: string
                   minLength: 1
@@ -453,7 +453,7 @@ paths:
                   items:
                     type: string
               required:
-              - namespace
+              - qubuifsNamespace
               - name
               - meta_service_id
       responses:
@@ -557,9 +557,9 @@ paths:
                                 format: int32
                                 x-go-type: uint32
                                 minimum: 0
-                        namespace:
+                        qubuifsNamespace:
                           type: string
-                          description: pb.QubuiFS.namespace.
+                          description: pb.QubuiFS.qubuifsNamespace.
                         name:
                           type: string
                           description: pb.QubuiFS.name.
@@ -572,10 +572,10 @@ paths:
                           items:
                             type: object
                             additionalProperties: false
-                            description: REST representation of pb.MountInfo. namespace
+                            description: REST representation of pb.MountInfo. qubuifsNamespace
                               identifies the QubuiFS namespace for this operation.
                             properties:
-                              namespace:
+                              qubuifsNamespace:
                                 type: string
                                 minLength: 1
                                 description: QubuiFS namespace. This field is required
@@ -585,7 +585,7 @@ paths:
                               node_id:
                                 type: string
                             required:
-                            - namespace
+                            - qubuifsNamespace
                             - path
                             - node_id
                         meta_service_id:
@@ -600,7 +600,7 @@ paths:
                             type: string
                       required:
                       - fs_uuid
-                      - namespace
+                      - qubuifsNamespace
     delete:
       summary: Delete QubuiFS
       operationId: DeleteQubuiFS
@@ -719,14 +719,14 @@ paths:
               description: Request for registering or unregistering one node in a
                 specific QubuiFS topology. fs_uuid comes from the path.
               properties:
-                namespace:
+                qubuifsNamespace:
                   type: string
-                  description: pb.QubuiFS.namespace.
+                  description: pb.QubuiFS.qubuifsNamespace.
                 node_id:
                   type: string
                   description: pb.CrushNode.node_id.
               required:
-              - namespace
+              - qubuifsNamespace
               - node_id
       responses:
         '200':
@@ -755,14 +755,14 @@ paths:
                       type: object
                       additionalProperties: false
                       properties:
-                        namespace:
+                        qubuifsNamespace:
                           type: string
                         fs_uuid:
                           type: string
                         node_id:
                           type: string
                       required:
-                      - namespace
+                      - qubuifsNamespace
                       - fs_uuid
                       - node_id
     delete:
@@ -783,14 +783,14 @@ paths:
               description: Request for registering or unregistering one node in a
                 specific QubuiFS topology. fs_uuid comes from the path.
               properties:
-                namespace:
+                qubuifsNamespace:
                   type: string
-                  description: pb.QubuiFS.namespace.
+                  description: pb.QubuiFS.qubuifsNamespace.
                 node_id:
                   type: string
                   description: pb.CrushNode.node_id.
               required:
-              - namespace
+              - qubuifsNamespace
               - node_id
       responses:
         '200':
@@ -819,14 +819,14 @@ paths:
                       type: object
                       additionalProperties: false
                       properties:
-                        namespace:
+                        qubuifsNamespace:
                           type: string
                         fs_uuid:
                           type: string
                         node_id:
                           type: string
                       required:
-                      - namespace
+                      - qubuifsNamespace
                       - fs_uuid
                       - node_id
   /qubuifs/{fs_uuid}/data-nodes:
@@ -853,17 +853,17 @@ paths:
               additionalProperties: false
               description: Data node membership operation scoped to a QubuiFS namespace.
               properties:
-                namespace:
+                qubuifsNamespace:
                   type: string
                   minLength: 1
-                  description: QubuiFS namespace. This field is required for data-node
-                    operations.
+                  description: QubuiFS logical namespace. This field is required for
+                    data-node operations.
                 node_id:
                   type: string
                   minLength: 1
                   description: Node ID that must already exist in etcd.
               required:
-              - namespace
+              - qubuifsNamespace
               - node_id
       responses:
         '200':
@@ -922,9 +922,9 @@ paths:
                                 format: int32
                                 x-go-type: uint32
                                 minimum: 0
-                        namespace:
+                        qubuifsNamespace:
                           type: string
-                          description: pb.QubuiFS.namespace.
+                          description: pb.QubuiFS.qubuifsNamespace.
                         name:
                           type: string
                           description: pb.QubuiFS.name.
@@ -937,10 +937,10 @@ paths:
                           items:
                             type: object
                             additionalProperties: false
-                            description: REST representation of pb.MountInfo. namespace
+                            description: REST representation of pb.MountInfo. qubuifsNamespace
                               identifies the QubuiFS namespace for this operation.
                             properties:
-                              namespace:
+                              qubuifsNamespace:
                                 type: string
                                 minLength: 1
                                 description: QubuiFS namespace. This field is required
@@ -950,7 +950,7 @@ paths:
                               node_id:
                                 type: string
                             required:
-                            - namespace
+                            - qubuifsNamespace
                             - path
                             - node_id
                         meta_service_id:
@@ -965,7 +965,7 @@ paths:
                             type: string
                       required:
                       - fs_uuid
-                      - namespace
+                      - qubuifsNamespace
     delete:
       tags:
       - QubuiFS
@@ -982,17 +982,17 @@ paths:
               additionalProperties: false
               description: Data node membership operation scoped to a QubuiFS namespace.
               properties:
-                namespace:
+                qubuifsNamespace:
                   type: string
                   minLength: 1
-                  description: QubuiFS namespace. This field is required for data-node
-                    operations.
+                  description: QubuiFS logical namespace. This field is required for
+                    data-node operations.
                 node_id:
                   type: string
                   minLength: 1
                   description: Node ID that must already exist in etcd.
               required:
-              - namespace
+              - qubuifsNamespace
               - node_id
       responses:
         '200':
@@ -1051,9 +1051,9 @@ paths:
                                 format: int32
                                 x-go-type: uint32
                                 minimum: 0
-                        namespace:
+                        qubuifsNamespace:
                           type: string
-                          description: pb.QubuiFS.namespace.
+                          description: pb.QubuiFS.qubuifsNamespace.
                         name:
                           type: string
                           description: pb.QubuiFS.name.
@@ -1066,10 +1066,10 @@ paths:
                           items:
                             type: object
                             additionalProperties: false
-                            description: REST representation of pb.MountInfo. namespace
+                            description: REST representation of pb.MountInfo. qubuifsNamespace
                               identifies the QubuiFS namespace for this operation.
                             properties:
-                              namespace:
+                              qubuifsNamespace:
                                 type: string
                                 minLength: 1
                                 description: QubuiFS namespace. This field is required
@@ -1079,7 +1079,7 @@ paths:
                               node_id:
                                 type: string
                             required:
-                            - namespace
+                            - qubuifsNamespace
                             - path
                             - node_id
                         meta_service_id:
@@ -1094,7 +1094,7 @@ paths:
                             type: string
                       required:
                       - fs_uuid
-                      - namespace
+                      - qubuifsNamespace
   /qubuifs/{fs_uuid}/mount-info:
     parameters:
     - name: fs_uuid
@@ -1117,10 +1117,10 @@ paths:
             schema:
               type: object
               additionalProperties: false
-              description: REST representation of pb.MountInfo. namespace identifies
+              description: REST representation of pb.MountInfo. qubuifsNamespace identifies
                 the QubuiFS namespace for this operation.
               properties:
-                namespace:
+                qubuifsNamespace:
                   type: string
                   minLength: 1
                   description: QubuiFS namespace. This field is required for mount-info
@@ -1130,7 +1130,7 @@ paths:
                 node_id:
                   type: string
               required:
-              - namespace
+              - qubuifsNamespace
               - path
               - node_id
       responses:
@@ -1190,9 +1190,9 @@ paths:
                                 format: int32
                                 x-go-type: uint32
                                 minimum: 0
-                        namespace:
+                        qubuifsNamespace:
                           type: string
-                          description: pb.QubuiFS.namespace.
+                          description: pb.QubuiFS.qubuifsNamespace.
                         name:
                           type: string
                           description: pb.QubuiFS.name.
@@ -1205,10 +1205,10 @@ paths:
                           items:
                             type: object
                             additionalProperties: false
-                            description: REST representation of pb.MountInfo. namespace
+                            description: REST representation of pb.MountInfo. qubuifsNamespace
                               identifies the QubuiFS namespace for this operation.
                             properties:
-                              namespace:
+                              qubuifsNamespace:
                                 type: string
                                 minLength: 1
                                 description: QubuiFS namespace. This field is required
@@ -1218,7 +1218,7 @@ paths:
                               node_id:
                                 type: string
                             required:
-                            - namespace
+                            - qubuifsNamespace
                             - path
                             - node_id
                         meta_service_id:
@@ -1233,7 +1233,7 @@ paths:
                             type: string
                       required:
                       - fs_uuid
-                      - namespace
+                      - qubuifsNamespace
     delete:
       tags:
       - QubuiFS
@@ -1248,10 +1248,10 @@ paths:
             schema:
               type: object
               additionalProperties: false
-              description: REST representation of pb.MountInfo. namespace identifies
+              description: REST representation of pb.MountInfo. qubuifsNamespace identifies
                 the QubuiFS namespace for this operation.
               properties:
-                namespace:
+                qubuifsNamespace:
                   type: string
                   minLength: 1
                   description: QubuiFS namespace. This field is required for mount-info
@@ -1261,7 +1261,7 @@ paths:
                 node_id:
                   type: string
               required:
-              - namespace
+              - qubuifsNamespace
               - path
               - node_id
       responses:
@@ -1321,9 +1321,9 @@ paths:
                                 format: int32
                                 x-go-type: uint32
                                 minimum: 0
-                        namespace:
+                        qubuifsNamespace:
                           type: string
-                          description: pb.QubuiFS.namespace.
+                          description: pb.QubuiFS.qubuifsNamespace.
                         name:
                           type: string
                           description: pb.QubuiFS.name.
@@ -1336,10 +1336,10 @@ paths:
                           items:
                             type: object
                             additionalProperties: false
-                            description: REST representation of pb.MountInfo. namespace
+                            description: REST representation of pb.MountInfo. qubuifsNamespace
                               identifies the QubuiFS namespace for this operation.
                             properties:
-                              namespace:
+                              qubuifsNamespace:
                                 type: string
                                 minLength: 1
                                 description: QubuiFS namespace. This field is required
@@ -1349,7 +1349,7 @@ paths:
                               node_id:
                                 type: string
                             required:
-                            - namespace
+                            - qubuifsNamespace
                             - path
                             - node_id
                         meta_service_id:
@@ -1364,7 +1364,7 @@ paths:
                             type: string
                       required:
                       - fs_uuid
-                      - namespace
+                      - qubuifsNamespace
   /datanodes:
     get:
       tags:
@@ -1593,7 +1593,7 @@ paths:
                                   type: string
                               version:
                                 type: string
-                              namespace:
+                              qubuifsNamespace:
                                 type: string
                             required:
                             - node_id
@@ -1976,7 +1976,7 @@ paths:
                             type: string
                         version:
                           type: string
-                        namespace:
+                        qubuifsNamespace:
                           type: string
                       required:
                       - node_id
@@ -3026,21 +3026,17 @@ paths:
                             properties:
                               service_id:
                                 type: string
-                              fs_uuid_list:
-                                type: array
-                                items:
-                                  type: string
-                              namespace:
-                                type: array
-                                items:
-                                  type: string
+                              fs_uuid:
+                                type: string
+                              qubuifsNamespace:
+                                type: string
                               des:
                                 type: string
                               version:
                                 type: string
                             required:
                             - service_id
-                            - namespace
+                            - qubuifsNamespace
                         count:
                           type: integer
                           minimum: 0
@@ -3063,28 +3059,21 @@ paths:
               type: object
               additionalProperties: false
               description: Logical metadata service input aligned with pb.MetaService.
-                namespace is required and service_id is generated by the control plane.
+                qubuifsNamespace is required and service_id is generated by the control
+                plane.
               properties:
-                fs_uuid_list:
-                  type: array
-                  items:
-                    type: string
-                    minLength: 1
-                  uniqueItems: true
-                namespace:
-                  type: array
-                  items:
-                    type: string
-                    minLength: 1
-                  minItems: 1
-                  maxItems: 1
-                  uniqueItems: true
+                fs_uuid:
+                  type: string
+                  minLength: 1
+                qubuifsNamespace:
+                  type: string
+                  minLength: 1
                 des:
                   type: string
                 version:
                   type: string
               required:
-              - namespace
+              - qubuifsNamespace
       responses:
         '201':
           description: Metadata service created
@@ -3159,21 +3148,17 @@ paths:
                       properties:
                         service_id:
                           type: string
-                        fs_uuid_list:
-                          type: array
-                          items:
-                            type: string
-                        namespace:
-                          type: array
-                          items:
-                            type: string
+                        fs_uuid:
+                          type: string
+                        qubuifsNamespace:
+                          type: string
                         des:
                           type: string
                         version:
                           type: string
                       required:
                       - service_id
-                      - namespace
+                      - qubuifsNamespace
     put:
       summary: Update metadata service
       operationId: UpdateMetaService
@@ -3190,12 +3175,9 @@ paths:
               type: object
               additionalProperties: false
               properties:
-                fs_uuid_list:
-                  type: array
-                  items:
-                    type: string
-                    minLength: 1
-                  uniqueItems: true
+                fs_uuid:
+                  type: string
+                  minLength: 1
                 des:
                   type: string
                 version:
@@ -3229,21 +3211,17 @@ paths:
                       properties:
                         service_id:
                           type: string
-                        fs_uuid_list:
-                          type: array
-                          items:
-                            type: string
-                        namespace:
-                          type: array
-                          items:
-                            type: string
+                        fs_uuid:
+                          type: string
+                        qubuifsNamespace:
+                          type: string
                         des:
                           type: string
                         version:
                           type: string
                       required:
                       - service_id
-                      - namespace
+                      - qubuifsNamespace
     delete:
       summary: Delete metadata service
       operationId: DeleteMetaService
@@ -3331,7 +3309,7 @@ paths:
                                 type: integer
                                 format: int32
                                 minimum: 0
-                              namespace:
+                              qubuifsNamespace:
                                 type: array
                                 items:
                                   type: string
@@ -3344,7 +3322,7 @@ paths:
                             required:
                             - instance_id
                             - service_id
-                            - namespace
+                            - qubuifsNamespace
                         count:
                           type: integer
                           minimum: 0
@@ -3475,7 +3453,7 @@ paths:
                           type: integer
                           format: int32
                           minimum: 0
-                        namespace:
+                        qubuifsNamespace:
                           type: array
                           items:
                             type: string
@@ -3488,7 +3466,7 @@ paths:
                       required:
                       - instance_id
                       - service_id
-                      - namespace
+                      - qubuifsNamespace
     put:
       summary: Update metadata instance
       operationId: UpdateMetaInstance
@@ -3549,7 +3527,7 @@ paths:
                           type: integer
                           format: int32
                           minimum: 0
-                        namespace:
+                        qubuifsNamespace:
                           type: array
                           items:
                             type: string
@@ -3562,7 +3540,7 @@ paths:
                       required:
                       - instance_id
                       - service_id
-                      - namespace
+                      - qubuifsNamespace
     delete:
       summary: Delete metadata instance
       operationId: DeleteMetaInstance
@@ -3974,7 +3952,7 @@ components:
             type: string
         version:
           type: string
-        namespace:
+        qubuifsNamespace:
           type: string
       required:
       - node_id
@@ -4477,29 +4455,21 @@ components:
     MetaServiceCreateRequest:
       type: object
       additionalProperties: false
-      description: Logical metadata service input aligned with pb.MetaService. namespace
+      description: Logical metadata service input aligned with pb.MetaService. qubuifsNamespace
         is required and service_id is generated by the control plane.
       properties:
-        fs_uuid_list:
-          type: array
-          items:
-            type: string
-            minLength: 1
-          uniqueItems: true
-        namespace:
-          type: array
-          items:
-            type: string
-            minLength: 1
-          minItems: 1
-          maxItems: 1
-          uniqueItems: true
+        fs_uuid:
+          type: string
+          minLength: 1
+        qubuifsNamespace:
+          type: string
+          minLength: 1
         des:
           type: string
         version:
           type: string
       required:
-      - namespace
+      - qubuifsNamespace
     MetaServiceCreateData:
       type: object
       additionalProperties: false
@@ -4514,21 +4484,17 @@ components:
       properties:
         service_id:
           type: string
-        fs_uuid_list:
-          type: array
-          items:
-            type: string
-        namespace:
-          type: array
-          items:
-            type: string
+        fs_uuid:
+          type: string
+        qubuifsNamespace:
+          type: string
         des:
           type: string
         version:
           type: string
       required:
       - service_id
-      - namespace
+      - qubuifsNamespace
     MetaServiceListData:
       type: object
       additionalProperties: false
@@ -4541,21 +4507,17 @@ components:
             properties:
               service_id:
                 type: string
-              fs_uuid_list:
-                type: array
-                items:
-                  type: string
-              namespace:
-                type: array
-                items:
-                  type: string
+              fs_uuid:
+                type: string
+              qubuifsNamespace:
+                type: string
               des:
                 type: string
               version:
                 type: string
             required:
             - service_id
-            - namespace
+            - qubuifsNamespace
         count:
           type: integer
           minimum: 0
@@ -4566,12 +4528,9 @@ components:
       type: object
       additionalProperties: false
       properties:
-        fs_uuid_list:
-          type: array
-          items:
-            type: string
-            minLength: 1
-          uniqueItems: true
+        fs_uuid:
+          type: string
+          minLength: 1
         des:
           type: string
         version:
@@ -4622,7 +4581,7 @@ components:
           type: integer
           format: int32
           minimum: 0
-        namespace:
+        qubuifsNamespace:
           type: array
           items:
             type: string
@@ -4635,7 +4594,7 @@ components:
       required:
       - instance_id
       - service_id
-      - namespace
+      - qubuifsNamespace
     MetaInstanceListData:
       type: object
       additionalProperties: false
@@ -4656,7 +4615,7 @@ components:
                 type: integer
                 format: int32
                 minimum: 0
-              namespace:
+              qubuifsNamespace:
                 type: array
                 items:
                   type: string
@@ -4669,7 +4628,7 @@ components:
             required:
             - instance_id
             - service_id
-            - namespace
+            - qubuifsNamespace
         count:
           type: integer
           minimum: 0
@@ -4896,7 +4855,7 @@ components:
                   type: string
               version:
                 type: string
-              namespace:
+              qubuifsNamespace:
                 type: string
             required:
             - node_id
@@ -5039,9 +4998,9 @@ components:
                 format: int32
                 x-go-type: uint32
                 minimum: 0
-        namespace:
+        qubuifsNamespace:
           type: string
-          description: pb.QubuiFS.namespace.
+          description: pb.QubuiFS.qubuifsNamespace.
         name:
           type: string
           description: pb.QubuiFS.name.
@@ -5054,10 +5013,10 @@ components:
           items:
             type: object
             additionalProperties: false
-            description: REST representation of pb.MountInfo. namespace identifies
+            description: REST representation of pb.MountInfo. qubuifsNamespace identifies
               the QubuiFS namespace for this operation.
             properties:
-              namespace:
+              qubuifsNamespace:
                 type: string
                 minLength: 1
                 description: QubuiFS namespace. This field is required for mount-info
@@ -5067,7 +5026,7 @@ components:
               node_id:
                 type: string
             required:
-            - namespace
+            - qubuifsNamespace
             - path
             - node_id
         meta_service_id:
@@ -5082,14 +5041,14 @@ components:
             type: string
       required:
       - fs_uuid
-      - namespace
+      - qubuifsNamespace
     MountInfo:
       type: object
       additionalProperties: false
-      description: REST representation of pb.MountInfo. namespace identifies the QubuiFS
-        namespace for this operation.
+      description: REST representation of pb.MountInfo. qubuifsNamespace identifies
+        the QubuiFS namespace for this operation.
       properties:
-        namespace:
+        qubuifsNamespace:
           type: string
           minLength: 1
           description: QubuiFS namespace. This field is required for mount-info operations.
@@ -5098,7 +5057,7 @@ components:
         node_id:
           type: string
       required:
-      - namespace
+      - qubuifsNamespace
       - path
       - node_id
     DiskLabel:
@@ -5163,9 +5122,9 @@ components:
                         format: int32
                         x-go-type: uint32
                         minimum: 0
-                namespace:
+                qubuifsNamespace:
                   type: string
-                  description: pb.QubuiFS.namespace.
+                  description: pb.QubuiFS.qubuifsNamespace.
                 name:
                   type: string
                   description: pb.QubuiFS.name.
@@ -5178,10 +5137,10 @@ components:
                   items:
                     type: object
                     additionalProperties: false
-                    description: REST representation of pb.MountInfo. namespace identifies
-                      the QubuiFS namespace for this operation.
+                    description: REST representation of pb.MountInfo. qubuifsNamespace
+                      identifies the QubuiFS namespace for this operation.
                     properties:
-                      namespace:
+                      qubuifsNamespace:
                         type: string
                         minLength: 1
                         description: QubuiFS namespace. This field is required for
@@ -5191,7 +5150,7 @@ components:
                       node_id:
                         type: string
                     required:
-                    - namespace
+                    - qubuifsNamespace
                     - path
                     - node_id
                 meta_service_id:
@@ -5206,7 +5165,7 @@ components:
                     type: string
               required:
               - fs_uuid
-              - namespace
+              - qubuifsNamespace
         count:
           type: integer
           description: Total number of filesystems across all namespaces.
@@ -5228,9 +5187,9 @@ components:
       description: Create request for QubuiFS. The REST layer builds pb.QubuiFS from
         these required fields.
       properties:
-        namespace:
+        qubuifsNamespace:
           type: string
-          description: pb.QubuiFS.namespace.
+          description: pb.QubuiFS.qubuifsNamespace.
         name:
           type: string
           minLength: 1
@@ -5251,7 +5210,7 @@ components:
           items:
             type: string
       required:
-      - namespace
+      - qubuifsNamespace
       - name
       - meta_service_id
     QubuiFSNodeRequest:
@@ -5259,16 +5218,17 @@ components:
       additionalProperties: false
       description: Data node membership operation scoped to a QubuiFS namespace.
       properties:
-        namespace:
+        qubuifsNamespace:
           type: string
           minLength: 1
-          description: QubuiFS namespace. This field is required for data-node operations.
+          description: QubuiFS logical namespace. This field is required for data-node
+            operations.
         node_id:
           type: string
           minLength: 1
           description: Node ID that must already exist in etcd.
       required:
-      - namespace
+      - qubuifsNamespace
       - node_id
     QubuiFSTopologyNodeRequest:
       type: object
@@ -5276,26 +5236,26 @@ components:
       description: Request for registering or unregistering one node in a specific
         QubuiFS topology. fs_uuid comes from the path.
       properties:
-        namespace:
+        qubuifsNamespace:
           type: string
-          description: pb.QubuiFS.namespace.
+          description: pb.QubuiFS.qubuifsNamespace.
         node_id:
           type: string
           description: pb.CrushNode.node_id.
       required:
-      - namespace
+      - qubuifsNamespace
       - node_id
     QubuiFSTopologyNodeData:
       type: object
       additionalProperties: false
       properties:
-        namespace:
+        qubuifsNamespace:
           type: string
         fs_uuid:
           type: string
         node_id:
           type: string
       required:
-      - namespace
+      - qubuifsNamespace
       - fs_uuid
       - node_id
